@@ -1,0 +1,11 @@
+body {
+    height: 100dvh;
+}
+
+nav {
+    height: 100%;
+}
+
+li:hover {
+    background: linear-gradient(270deg, var(--bs-nav-pills-link-active-bg), transparent);
+}
