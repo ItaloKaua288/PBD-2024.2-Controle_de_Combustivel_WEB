@@ -5,8 +5,29 @@ from django.contrib.auth.hashers import check_password
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.exceptions import ValidationError
+from rolepermissions.decorators import has_role_decorator
 from .models import Usuarios
 from .validators import username_validator, password_validator
+
+@login_required(login_url='login')
+def usuariosPerfil(request, pk):
+    usuario = Usuarios.objects.get(pk=pk)
+    context = {'perfil_logado': usuario, 'usuario': usuario}
+    if request.method == 'POST':
+        try:
+            new_password = password_validator(request.POST.get('new-password'))
+            confirm_password = password_validator(request.POST.get('confirm-password'))
+            if new_password != confirm_password:
+                raise ValueError('Campos de senha precisam ser iguais!')
+            if not check_password(new_password, usuario.password):
+                usuario.set_password(new_password)
+                usuario.save()
+                messages.add_message(request, messages.SUCCESS, 'Senha alterada com sucesso!')
+        except Exception as e:
+            messages.add_message(request, messages.ERROR, e.args[0])
+        return redirect(reverse('usuarios_perfil', kwargs={'pk': pk}))
+    if request.method == 'GET':
+        return render(request, 'usuarios_perfil.html', context)
 
 @login_required(login_url='login')
 def usuariosEditarView(request, pk):
@@ -32,11 +53,17 @@ def usuariosEditarView(request, pk):
                     usuario.set_password(new_password)
             usuario.save()
         except Exception as e:
-            messages.add_message(request, messages.ERROR, e.args[0])
+            try:
+                messages.add_message(request, messages.ERROR, e.args[0])
+            except:
+                messages.add_message(request, messages.ERROR, e.args)
         return redirect(reverse('usuarios_editar', kwargs={'pk': pk}))
     if request.method == 'GET':
-        usuario = Usuarios.objects.get(pk=pk)
-        return render(request, 'usuarios_editar.html', {'usuario': usuario})
+        context = {
+            'perfil_logado': Usuarios.objects.get(username=request.user),
+            'usuario': Usuarios.objects.get(pk=pk)
+        }
+        return render(request, 'usuarios_editar.html', context)
 
 @login_required(login_url='login')
 def usuariosDeletarView(request, pk):
@@ -59,20 +86,28 @@ def usuariosCadastroView(request):
             usuario.set_password(password)
             usuario.save()
         except Exception as e:
-            messages.add_message(request, messages.ERROR, e.args[0])
+            try:
+                messages.add_message(request, messages.ERROR, e.args[0])
+            except:
+                messages.add_message(request, messages.ERROR, e.args)
         else:
             messages.add_message(request, messages.SUCCESS, 'Usuario cadastrado com sucesso!')
         return redirect(reverse('usuarios'))
     if request.method == 'GET':
-        return render(request, 'usuarios_cadastro.html')
+        context = {'perfil_logado': Usuarios.objects.get(username=request.user)}
+        return render(request, 'usuarios_cadastro.html', context)
     
 @login_required(login_url='login')
 def usuariosView(request):
+    context = {'perfil_logado': Usuarios.objects.get(username=request.user)}
     if request.method == 'POST':
         usuarios = Usuarios.objects.filter(username__icontains=request.POST.get('username_busca'), cargo='M')
-        return render(request, 'usuarios.html', {'usuarios': usuarios})
+
+        context['usuarios'] = usuarios
+        return render(request, 'usuarios.html', context)
     if request.method == 'GET':
-        return render(request, 'usuarios.html', {'usuarios': Usuarios.objects.filter(cargo='M')})
+        context['usuarios'] = Usuarios.objects.filter(cargo='M')
+        return render(request, 'usuarios.html', context)
 
 def loginView(request):
     if request.method == 'POST':

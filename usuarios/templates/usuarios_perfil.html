@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block 'title' %}Perfil{% endblock %}
+
+{% block 'head' %}
+    <link rel="stylesheet" href="{% static 'usuarios/css/usuarios_editar.css' %}">
+{% endblock %}
+
+{% block 'body' %}
+    <div class="container p-2">
+        <div class="card text-center fw-bold fs-3 mb-2">Perfil</div>
+        {% for message in messages %}<div class="alert {{message.tags}}">{{message}}</div>{% endfor %}
+        <form method="post" class="d-flex flex-column align-items-center">
+            {% csrf_token %}
+            <label for="username" class="form-label">Usuario:<span class="form-control">{{usuario.username}}</span></label>
+            <div id="password-box" class="d-flex flex-column mb-2"></div>
+            <div id="password-btns">
+                <span id="alterar-senha-btn" class="btn btn-primary">Alterar Senha</span>
+            </div>
+        </form>
+    </div>
+{% endblock %}
+
+{% block 'script' %}<script src="{% static 'usuarios/js/usuarios_perfil.js' %}"></script>{% endblock  %}

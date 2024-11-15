@@ -5,7 +5,8 @@ from django.contrib.auth.hashers import make_password
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxLengthValidator, MinLengthValidator
 from .userManagers import CustomUserManager
-from .validators import username_validator
+from django.db.models.signals import post_save
+from rolepermissions.roles import assign_role
 
 class Usuarios(AbstractBaseUser, PermissionsMixin):
     cargo_choices = (('A', 'Admnistrador'), ('M', 'Motorista'))
@@ -31,3 +32,11 @@ class Usuarios(AbstractBaseUser, PermissionsMixin):
             raise ValidationError('Senha deve ser de 4 a 12 caracteres')
         self.password = make_password(raw_password)
         self._password = raw_password
+
+def criar_usuario(sender, instance:Usuarios, created, **kwargs):
+    if created:
+        if instance.cargo == 'A':
+            assign_role(instance, 'administrador')
+        elif instance.cargo == 'M':
+            assign_role(instance, 'motorista')
+post_save.connect(criar_usuario, Usuarios)

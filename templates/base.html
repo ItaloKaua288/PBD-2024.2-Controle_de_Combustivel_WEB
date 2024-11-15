@@ -67,7 +67,7 @@
               <strong class="option-text invisible">Perfil</strong>
             </a>
             <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser2" style="left: 64px;">
-              <li><a class="dropdown-item" href="#">Perfil</a></li>
+              <li><a class="dropdown-item" href="{% url 'usuarios_perfil' perfil_logado.pk %}">Perfil</a></li>
               <li><a class="dropdown-item" href="{% url 'logout' %}">Sair</a></li>
             </ul>
           </div>
