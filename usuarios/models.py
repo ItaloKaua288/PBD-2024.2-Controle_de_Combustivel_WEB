@@ -1,14 +1,18 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, AbstractUser
 from django.contrib.auth.validators import UnicodeUsernameValidator
+from django.contrib.auth.hashers import make_password
+from django.core.exceptions import ValidationError
+from django.core.validators import MaxLengthValidator, MinLengthValidator
 from .userManagers import CustomUserManager
-from django.dispatch import receiver
-from django.db.models.signals import post_save
+from .validators import username_validator
 
 class Usuarios(AbstractBaseUser, PermissionsMixin):
     cargo_choices = (('A', 'Admnistrador'), ('M', 'Motorista'))
     cargo = models.CharField(max_length=1, choices=cargo_choices, null=False, blank=False, default='M')
-    username = models.CharField(max_length=150, unique=True, null=False, validators=[UnicodeUsernameValidator()], error_messages={'unique': 'Usuario já existe'})
+    username = models.CharField(max_length=50, unique=True, null=False, 
+                                validators=[UnicodeUsernameValidator, MaxLengthValidator(limit_value=50), MinLengthValidator(limit_value=4)], 
+                                error_messages={'unique': 'Usuario já existe'})
     is_superuser = models.BooleanField(default=False)
     
     USERNAME_FIELD = 'username'
@@ -22,10 +26,8 @@ class Usuarios(AbstractBaseUser, PermissionsMixin):
         return self.is_superuser
     objects = CustomUserManager()
 
-
-# @receiver(post_save, sender=Usuarios)
-# def create_token(sender, instance:Usuarios, created, **kwargs):
-#     if created and instance.cargo == 'A':
-#         token = TokenProxy(user=instance)
-#         token.save()
-# post_save.connect(create_token, sender=Usuarios)
+    def set_password(self, raw_password):
+        if len(raw_password) > 12 or len(raw_password) < 4:
+            raise ValidationError('Senha deve ser de 4 a 12 caracteres')
+        self.password = make_password(raw_password)
+        self._password = raw_password
