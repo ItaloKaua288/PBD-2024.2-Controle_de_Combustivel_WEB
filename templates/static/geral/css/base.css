@@ -13,8 +13,8 @@ nav {
 }
 
 #options-box {
-    transition: width .3s ease !important;
-    overflow-x: hidden;
+    max-width: 73px;
+    transition: max-width .3s ease !important;
 }
 
 li {
@@ -32,4 +32,15 @@ li>a {
 
 a>svg {
     min-width: 25px;
+}
+
+#menu-usuarios {
+    position: relative;
+}
+
+#menu-usuarios>ul {
+    position: absolute;
+    left: 64px;
+    top: calc(100% - 77px);
+    transition: left .3s ease;
 }

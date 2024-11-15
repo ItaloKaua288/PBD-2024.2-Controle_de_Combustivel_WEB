@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block 'title' %}Usuarios{% endblock %}
+
+{% block 'head' %}
+    <link rel="stylesheet" href="">
+{% endblock %}
+
+{% block 'body' %}
+    <div class="container p-2">
+        <div class="card text-center fw-bold fs-3 mb-2">Usuarios</div>
+        <div class="card flex-row p-2 mb-2 justify-content-between">
+            <form method="post" class="d-flex" style="gap: 5px;">
+                {% csrf_token %}
+                <input type="text" name="username_busca" class="form-control border-2 border-secondary">
+                {% comment %} <label for="tipo" class="form-label d-flex align-items-center">
+                    Motorista
+                    <input type="checkbox" name="tipo" id="tipo" value="M" class="ms-1" {% if tipo_busca == 'M' %}checked{% endif %}>
+                </label> {% endcomment %}
+                <input type="submit" value="Buscar" class="btn btn-primary">
+            </form>
+            <a href="#" class="btn btn-primary">Cadastrar</a>
+        </div>
+        <table class="table table-dark table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Username</th>
+                    <th scope="col">Password</th>
+                    <th scope="col">Editar</th>
+                    <th scope="col">Excluir</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if usuarios %}
+                    {% for usuario in usuarios %}
+                        <tr>
+                            <th scope="row">{{usuario.id}}</th>
+                            <td style="overflow-x: auto;">{{usuario.username}}</td>
+                            <td style="max-width: 200px; overflow-x: auto;">{{usuario.password}}</td>
+                            <td style="width: 88px;"><a class="btn btn-primary" href="#">Editar</a></td>
+                            <td style="width: 88px;"><a href="#" class="btn btn-danger">Excluir</a></td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                        <td class="text-center" colspan="5">SEM RETORNO!!</td>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
+
+{% block 'script' %}{% endblock %}
