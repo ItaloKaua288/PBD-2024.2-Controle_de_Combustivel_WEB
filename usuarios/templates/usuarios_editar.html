@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block 'title' %}Editar{% endblock %}
+
+{% block 'head' %}
+    <link rel="stylesheet" href="{% static 'usuarios/css/usuarios_editar.css' %}">
+{% endblock %}
+
+{% block 'body' %}
+    <div class="container p-2">
+        <div class="card text-center fw-bold fs-3 mb-2">Editar</div>
+        {% for message in messages %}<div class="alert {{message.tags}}">{{message}}</div>{% endfor %}
+        <form method="post" class="d-flex flex-column align-items-center">
+            {% csrf_token %}
+            <label for="username" class="form-label">
+                Usuario:
+                <input type="text" name="username" id="username" class="form-control" maxlength="50" minlength="4" required value="{{usuario.username}}">
+            </label>
+            <div>
+                <label for="motorista" class="form-label">Motorista<input maxlength="150" class="ms-1" type="radio" name="cargo" id="motorista" value="M" checked></label>
+                <label for="administrador" class="form-label">Administrador<input class="ms-1" type="radio" name="cargo" id="administrador" value="A"></label>
+            </div>
+            <div id="password-box" class="d-flex flex-column mb-2"></div>
+            <div>
+                <span id="alterar-senha-btn" class="btn btn-primary">Alterar Senha</span>
+                <input type="submit" value="Confirmar" class="btn btn-primary">
+            </div>
+        </form>
+    </div>
+{% endblock %}
+
+{% block 'script' %}<script src="{% static 'usuarios/js/usuarios_editar.js' %}"></script>{% endblock  %}

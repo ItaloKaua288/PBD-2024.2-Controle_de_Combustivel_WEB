@@ -27,13 +27,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # 'rolepermissions',
-    # 'usuarios',
-    # 'postos',
-    # 'abastecimentos',
-    # 'home',
-    # 'veiculos',
-    # 'relatorios',
+    'rolepermissions',
+    'usuarios',
+    'postos',
+    'veiculos',
+    'relatorios',
 ]
 
 MIDDLEWARE = [
@@ -121,7 +119,7 @@ STAITC_ROOT = path.join('static')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# AUTH_USER_MODEL = 'usuarios.Usuarios'
+AUTH_USER_MODEL = 'usuarios.Usuarios'
 
 ROLEPERMISSIONS_MODULE = 'core.roles'
 

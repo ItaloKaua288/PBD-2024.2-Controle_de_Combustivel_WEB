@@ -1,0 +1,33 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="{% static 'geral/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'usuarios/css/base.css' %}">
+</head>
+<body>
+    <section class="bg-dark">
+        {% for message in messages %}
+            <div class="alert {{message.tags}}" role="alert">{{message}}</div>
+        {% endfor %}
+        <div class="container">
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="login" class="form-label">Login:</label>
+                    <input class="form-control" type="text" name="login" id="login" required>
+                </div>
+                <div class="mb-3">
+                    <label for="senha" class="form-label">Senha:</label>
+                    <input class="form-control" type="password" name="senha" id="senha" required>
+                </div>
+                <input class="btn btn-success" type="submit" value="Confirmar">
+            </form>
+        </div>
+    </section>
+</body>
+</html>
