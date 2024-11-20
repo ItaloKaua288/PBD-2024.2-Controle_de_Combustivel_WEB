@@ -1,0 +1,52 @@
+body {
+    height: 100dvh;
+}
+
+body>div, #body-content {
+    width: 100%;
+    height: 100%;
+}
+
+#body-content {
+    overflow-y: auto;
+}
+
+nav {
+    height: 100%;
+    transition: width .3s ease !important;
+}
+
+#options-box {
+    max-width: 73px;
+    transition: max-width .3s ease !important;
+}
+
+li {
+    width: 100%;
+    border-radius: 6px;
+}
+
+li:hover {
+    background: linear-gradient(270deg, var(--bs-nav-pills-link-active-bg), transparent);
+}
+
+li>a {
+    gap: 10px;
+}
+
+a>svg {
+    min-width: 25px;
+}
+
+#menu-usuarios, #menu-usuarios>ul, .nav-pills>li {
+    position: relative;
+}
+
+#menu-usuarios>ul {
+    top: calc(100% - 77px);
+    transition: left .3s ease;
+}
+
+.dropdown-menu {
+    top: 0;
+}
