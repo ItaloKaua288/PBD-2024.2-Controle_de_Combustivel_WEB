@@ -29,9 +29,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rolepermissions',
     'usuarios',
-    'postos',
+    # 'postos',
     'veiculos',
-    'relatorios',
+    # 'relatorios',
 ]
 
 MIDDLEWARE = [
