@@ -14,6 +14,7 @@ class Usuarios(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=50, unique=True, null=False, 
                                 validators=[UnicodeUsernameValidator, MaxLengthValidator(limit_value=50), MinLengthValidator(limit_value=4)], 
                                 error_messages={'unique': 'Usuario já existe'})
+    ativo = models.BooleanField(default=True, null=False, blank=False)
     is_superuser = models.BooleanField(default=False)
     
     USERNAME_FIELD = 'username'
@@ -37,6 +38,8 @@ def criar_usuario(sender, instance:Usuarios, created, **kwargs):
     if created:
         if instance.cargo == 'A':
             assign_role(instance, 'administrador')
+            instance.is_superuser = True
+            instance.save()
         elif instance.cargo == 'M':
             assign_role(instance, 'motorista')
 post_save.connect(criar_usuario, Usuarios)

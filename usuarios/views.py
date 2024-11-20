@@ -8,6 +8,7 @@ from django.core.exceptions import ValidationError
 from rolepermissions.decorators import has_role_decorator
 from .models import Usuarios
 from .validators import username_validator, password_validator
+from .forms import UsuariosForm
 
 @login_required(login_url='login')
 def usuariosPerfil(request, pk):
@@ -66,43 +67,43 @@ def usuariosEditarView(request, pk):
         }
         return render(request, 'usuarios_editar.html', context)
 
-@login_required(login_url='login')
-@has_role_decorator('Administrador', redirect_url=reverse_lazy('login'))
-def usuariosDeletarView(request, pk):
-    try:
-        usuario = Usuarios.objects.get(pk=pk, cargo='M')
-        usuario.delete()
-    except Usuarios.DoesNotExist:
-        messages.add_message(request, messages.ERROR, 'Usuario não encontrado!')
-    return redirect(reverse('usuarios'))
+# @login_required(login_url='login')
+# @has_role_decorator('Administrador', redirect_url=reverse_lazy('login'))
+# def usuariosDeletarView(request, pk):
+#     try:
+#         usuario = Usuarios.objects.get(pk=pk, cargo='M')
+#         usuario.delete()
+#     except Usuarios.DoesNotExist:
+#         messages.add_message(request, messages.ERROR, 'Usuario não encontrado!')
+#     return redirect(reverse('usuarios'))
 
 @login_required(login_url='login')
 @has_role_decorator('Administrador', redirect_url=reverse_lazy('login'))
 def usuariosCadastroView(request):
+    context = {'perfil_logado': Usuarios.objects.get(username=request.user)}
     if request.method == 'POST':
-        try:
-            username = username_validator(request.POST.get('username'))
-            password = password_validator(request.POST.get('password'))
-            cargo = request.POST.get('cargo')
-
-            usuario = Usuarios(username=username, cargo=cargo)
-            usuario.set_password(password)
-            usuario.save()
-        except Exception as e:
+        form = UsuariosForm(request.POST)
+        if form.is_valid():
             try:
-                messages.add_message(request, messages.ERROR, e.args[0])
-            except:
-                messages.add_message(request, messages.ERROR, e.args)
+                usuario = Usuarios(
+                    username=form.cleaned_data['username'].strip(),
+                    cargo=form.cleaned_data['cargo']
+                )
+                usuario.set_password(form.cleaned_data['password'])
+                usuario.save()
+                messages.add_message(request, messages.SUCCESS, 'Usuario cadastrado com sucesso!')
+            except Exception as e:
+                messages.add_message(request, messages.ERROR, e)
         else:
-            messages.add_message(request, messages.SUCCESS, 'Usuario cadastrado com sucesso!')
-        return redirect(reverse('usuarios'))
+            messages.add_message(request, messages.ERROR, form.errors)
+        return redirect(reverse('motoristas'))
     if request.method == 'GET':
-        context = {'perfil_logado': Usuarios.objects.get(username=request.user)}
+        context['form'] = UsuariosForm()
         return render(request, 'usuarios_cadastro.html', context)
     
 @login_required(login_url='login')
 @has_role_decorator('Administrador', redirect_url=reverse_lazy('login'))
-def usuariosView(request):
+def motoristasView(request):
     context = {'perfil_logado': Usuarios.objects.get(username=request.user)}
     if request.method == 'POST':
         usuarios = Usuarios.objects.filter(username__icontains=request.POST.get('username_busca'), cargo='M')
@@ -110,16 +111,20 @@ def usuariosView(request):
         context['usuarios'] = usuarios
         return render(request, 'usuarios.html', context)
     if request.method == 'GET':
-        context['usuarios'] = Usuarios.objects.filter(cargo='M')
+        context['motoristas'] = Usuarios.objects.filter(cargo='M')
         return render(request, 'usuarios.html', context)
 
 @login_required(login_url='login')
 @has_role_decorator('Administrador', redirect_url=reverse_lazy('login'))
 def usuariosDesativarView(request, pk):
     usuario = get_object_or_404(Usuarios, pk=pk)
-    usuario.is_active = False
+    if usuario.ativo:
+        usuario.ativo = False
+    else:
+        usuario.ativo = True
     usuario.save()
-    return redirect(reverse('usuarios'))
+    messages.add_message(request, messages.SUCCESS, 'Usuario alterado com sucesso!')
+    return redirect(reverse('motoristas'))
 
 def loginView(request):
     if request.method == 'POST':
@@ -133,7 +138,7 @@ def loginView(request):
         except Exception as e:
             messages.add_message(request, messages.ERROR, e.args[0])
         else:
-            return redirect(reverse('usuarios'))
+            return redirect(reverse('motoristas'))
         finally:
             if Usuarios.objects.get(username=request.user).cargo == 'A':
                 return redirect(reverse('login'))
@@ -142,7 +147,7 @@ def loginView(request):
         if request.user.is_authenticated:
             usuario = Usuarios.objects.get(username=request.user)
             if usuario.cargo == 'A':
-                return redirect(reverse('usuarios'))
+                return redirect(reverse('motoristas'))
             return redirect(reverse('usuarios_perfil', kwargs={'pk':usuario.pk}))
         return render(request, 'login.html')
 

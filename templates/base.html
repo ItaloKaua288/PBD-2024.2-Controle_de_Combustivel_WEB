@@ -22,14 +22,14 @@
           <hr>
           <ul class="nav nav-pills flex-column mb-auto">
             <li title="Motoristas" class="dropdown">
-              <a href="{% url 'usuarios' %}" class="nav-link link-dark d-flex flex-nowarp">
+              <a class="nav-link link-dark d-flex flex-nowarp">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-people" viewBox="0 0 16 16">
                   <path d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1zm-7.978-1L7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002-.014.002zM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4m3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0M6.936 9.28a6 6 0 0 0-1.23-.247A7 7 0 0 0 5 9c-4 0-5 3-5 4q0 1 1 1h4.216A2.24 2.24 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816M4.92 10A5.5 5.5 0 0 0 4 13H1c0-.26.164-1.03.76-1.724.545-.636 1.492-1.256 3.16-1.275ZM1.5 5.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0m3-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4"/>
                 </svg>
                 <span class="option-text invisible">Motoristas</span>
               </a>
               <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser2" style="left: 55px;">
-                <li><a class="dropdown-item" href="">Lista de motoristas</a></li>
+                <li><a class="dropdown-item" href="{% url 'motoristas' %}">Lista de motoristas</a></li>
                 <li><a class="dropdown-item" href=""></a></li>
               </ul>
             </li>
@@ -41,7 +41,7 @@
                 <span class="option-text invisible">Veiculos</span>
               </a>
               <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser2" style="left: 55px;">
-                <li><a class="dropdown-item" href="">Lista de veiculos</a></li>
+                <li><a class="dropdown-item" href="{% url 'veiculos' %}">Lista de veiculos</a></li>
                 <li><a class="dropdown-item" href=""></a></li>
               </ul>
             </li>
@@ -53,12 +53,12 @@
                 <span class="option-text invisible">Postos</span>
               </a>
               <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser2" style="left: 55px;">
-                <li><a class="dropdown-item" href="">Lista de postos</a></li>
-                <li><a class="dropdown-item" href="">Abastecimentos</a></li>
+                <li><a class="dropdown-item" href="{% url 'postos' %}">Lista de postos</a></li>
+                <li><a class="dropdown-item" href="{% url 'abastecimentos' %}">Abastecimentos</a></li>
               </ul>
             </li>
             <li title="Relatórios" class="dropdown">
-              <a href="" class="nav-link link-dark d-flex flex-nowarp">
+              <a class="nav-link link-dark d-flex flex-nowarp">
                 <img src="{% static 'geral/img/relatorios.png' %}" alt="">
                 <span class="option-text invisible">Relatórios</span>
               </a>
@@ -71,11 +71,11 @@
           </ul>
           <hr>
           <div title="Perfil" id="menu-usuarios" class="dropdown d-flex" style="padding-left: 13px;">
-            <a href="#" class="d-flex flex-nowarp align-items-center link-dark text-decoration-none dropdown-toggle" id="dropdownUser2" data-bs-toggle="dropdown" aria-expanded="false">
+            <a class="d-flex flex-nowarp align-items-center link-dark text-decoration-none dropdown-toggle" id="dropdownUser2" data-bs-toggle="dropdown" aria-expanded="false">
               <img src="{% static 'geral/img/usuario.png' %}" alt="" width="32" height="32" class="rounded-circle me-2">
               <strong class="option-text invisible">Perfil</strong>
             </a>
-            <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser2" style="left: 55px;">
+            <ul class="dropdown-menu text-small shadow position-absolute" aria-labelledby="dropdownUser2" style="left: 55px;">
               <li><a class="dropdown-item" href="{% url 'usuarios_perfil' perfil_logado.pk %}">Perfil</a></li>
               <li><a class="dropdown-item" href="{% url 'logout' %}">Sair</a></li>
             </ul>

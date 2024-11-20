@@ -50,3 +50,7 @@ a>svg {
 .dropdown-menu {
     top: 0;
 }
+
+label, form .errorlist>li {
+    color: white;
+}

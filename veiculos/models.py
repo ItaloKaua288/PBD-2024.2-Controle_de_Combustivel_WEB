@@ -25,7 +25,7 @@ class Veiculo(models.Model):
     capacidade_tanque = models.FloatField(null=False, blank=False, default=0)
     ativo = models.BooleanField(default=True, null=False, blank=False)
     modelo = models.ForeignKey(Modelo, on_delete=models.CASCADE)
-    tipo_combustivel = models.ManyToManyField(TipoCombustivel, related_name='tipo_combustivel')
+    tipo_combustivel = models.ManyToManyField(TipoCombustivel, related_name='veiculos')
 
     def __str__(self):
         return self.placa

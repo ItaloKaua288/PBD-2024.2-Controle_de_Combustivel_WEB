@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block 'title' %}Motoristas{% endblock %}
+{% block 'title' %}Postos{% endblock %}
 
 {% block 'body' %}
     <div class="container p-2">
-        <div class="card text-center fw-bold fs-3 mb-2">Motoristas</div>
+        <div class="card text-center fw-bold fs-3 mb-2">Postos</div>
         {% for message in messages %}<div class="alert {{message.tags}}">{{message}}</div>{% endfor %}
         <div class="card flex-row p-2 mb-2 justify-content-between">
             <form method="post" class="d-flex" style="gap: 5px;">
@@ -13,34 +13,36 @@
                 <input type="text" name="busca-input" placeholder="Digite um nome" class="form-control border-2 border-secondary">
                 <input type="submit" value="Buscar" class="btn btn-primary">
             </form>
-            <a href="{% url 'usuarios_cadastrar' %}" class="btn btn-primary">Cadastrar</a>
+            <a href="{% url 'postos_cadastrar' %}" class="btn btn-primary">Cadastrar</a>
         </div>
-        <div class="overflow-x-auto w-100">
+        <div class="overflow-x-auto">
             <table class="table table-dark table-striped">
                 <thead>
                     <tr>
                         <th scope="col">ID</th>
-                        <th scope="col">Username</th>
-                        <th scope="col">Senha</th>
+                        <th scope="col">Nome</th>
+                        <th scope="col">CNPJ</th>
+                        <th scope="col">Combustiveis</th>
                         <th scope="col">Status</th>
                         <th scope="col">Ações</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% if motoristas %}
-                        {% for motorista in motoristas %}
+                    {% if postos %}
+                        {% for posto in postos %}
                             <tr>
-                                <th scope="row">{{motorista.id}}</th>
-                                <td>{{motorista.username}}</td>
-                                <td class="overflow-x-scroll" style="max-width: 150px">{{motorista.password}}</td>
-                                <td>{% if motorista.ativo %}Sim{% else %}Não{% endif %}</td>
+                                <th scope="row">{{posto.id}}</th>
+                                <td class="w-50">{{posto.nome}}</td>
+                                <td>{{posto.cnpj}}</td>
+                                <td style="width: 150px;">{% for tipo in posto.tipos_combustivel.all %}<span class="badge text-bg-warning ms-1">{{tipo}}</span>{% endfor %}</td>
+                                <td>{% if posto.ativo %}Sim{% else %}Não{% endif %}</td>
                                 <td style="width: 145px;">
                                     <div class="d-flex">
-                                        <a class="btn btn-primary me-1 p-1" href="{% url 'usuarios_editar' motorista.pk %}">Editar</a>
+                                        <a class="btn btn-primary me-1 p-1" href="{% url 'postos_editar' posto.pk %}">Editar</a>
                                         {% if posto.ativo %}
-                                            <a href="{% url 'usuarios_desativar' motorista.pk %}" class="btn btn-danger p-1">Desativar</a>
+                                            <a href="{% url 'postos_desativar' posto.pk %}" class="btn btn-danger p-1">Desativar</a>
                                         {% else %}
-                                            <a href="{% url 'usuarios_desativar' motorista.pk %}" class="btn btn-success p-1">Ativar</a>
+                                            <a href="{% url 'postos_desativar' posto.pk %}" class="btn btn-success p-1">Ativar</a>
                                         {% endif %}
                                     </div>
                                 </td>
@@ -54,3 +56,5 @@
         </div>
     </div>
 {% endblock %}
+
+{% block 'script' %}{% endblock %}

@@ -8,6 +8,7 @@ class Posto(models.Model):
     nome = models.CharField(max_length=150, null=False, blank=False, validators=[MaxLengthValidator(limit_value=150)])
     cnpj = models.CharField(max_length=18, unique=True, null=False, blank=False, validators=[cnpj_validator])
     tipos_combustivel = models.ManyToManyField(TipoCombustivel, related_name='tipos_combustivel')
+    ativo = models.BooleanField(default=True, null=False, blank=False)
 
     class Meta:
         verbose_name = ("Posto")
