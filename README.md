@@ -15,5 +15,6 @@ Projeto que possibilita um controle e gestão de abastecimentos de uma frota de 
 - Gestão de veículos
 - Gestão de postos
 - Gestão de motoristas
+- Gestão de abastecimentos
 - Geração de relatórios
 
