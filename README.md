@@ -5,7 +5,7 @@ Projeto que possibilita um controle e gestão de abastecimentos de uma frota de 
 
 ## Stack utilizada
 
-**Front-end:** HTML, CSS e Bootstrap
+**Front-end:** HTML, CSS, JavaScript e Bootstrap
 
 **Back-end:** Django
 
