@@ -26,6 +26,7 @@ class Veiculo(models.Model):
     ativo = models.BooleanField(default=True, null=False, blank=False)
     modelo = models.ForeignKey(Modelo, on_delete=models.CASCADE)
     tipo_combustivel = models.ManyToManyField(TipoCombustivel, related_name='veiculos')
+    quilometragem = models.FloatField(default=0, null=False, blank=True)
 
     def __str__(self):
         return self.placa

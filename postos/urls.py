@@ -2,11 +2,11 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('', views.postosView, name='postos'),
-    path('cadastrar/', views.postosCadastrarView, name='postos_cadastrar'),
-    path('editar/<int:pk>', views.postosEditarView, name='postos_editar'),
-    path('desativar/<int:pk>', views.postosDesativarView, name='postos_desativar'),
-    path('abastecimentos/', views.abastecimentosView, name='abastecimentos'),
-    path('abastecimentos/cadastrar/', views.abastecimentosCadastrarView, name='abastecimentos_cadastrar'),
-    path('abastecimentos/editar/<int:pk>', views.abastecimentosEditarView, name='abastecimentos_editar'),
+    path('', views.Postos_view.as_view(), name='postos'),
+    path('cadastrar/', views.Posto_cadastrar_view.as_view(), name='postos_cadastrar'),
+    path('editar/<int:pk>', views.Posto_editar_view.as_view(), name='postos_editar'),
+    path('desativar/<int:pk>', views.postos_desativar_view, name='postos_desativar'),
+    path('abastecimentos/', views.Abastecimento_view.as_view(), name='abastecimentos'),
+    path('abastecimentos/cadastrar/', views.Abastecimento_cadastrar_view.as_view(), name='abastecimentos_cadastrar'),
+    path('abastecimentos/editar/<int:pk>', views.Abastecimento_editar_view.as_view(), name='abastecimentos_editar'),
 ]

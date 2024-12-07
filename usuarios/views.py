@@ -1,156 +1,123 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.urls import reverse, reverse_lazy
-from django.contrib.auth import login, authenticate
-from django.contrib.auth.hashers import check_password
-from django.contrib.auth.decorators import login_required
+from django.urls import reverse_lazy
 from django.contrib import messages
-from django.core.exceptions import ValidationError
+from django.contrib.auth import login, authenticate
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
+from django.views.generic import ListView, CreateView, UpdateView, View
 from rolepermissions.decorators import has_role_decorator
+from rolepermissions.mixins import HasRoleMixin
 from .models import Usuarios
-from .validators import username_validator, password_validator
-from .forms import UsuariosForm
+from .forms import UsuariosForm, LoginForm
+from utils.utils import get_perfil_logado
 
-@login_required(login_url='login')
-def usuariosPerfil(request, pk):
-    usuario = Usuarios.objects.get(pk=pk)
-    context = {'perfil_logado': usuario, 'usuario': usuario}
-    if request.method == 'POST':
-        try:
-            new_password = password_validator(request.POST.get('new-password'))
-            confirm_password = password_validator(request.POST.get('confirm-password'))
-            if new_password != confirm_password:
-                raise ValueError('Campos de senha precisam ser iguais!')
-            if not check_password(new_password, usuario.password):
-                usuario.set_password(new_password)
-                usuario.save()
-                messages.add_message(request, messages.SUCCESS, 'Senha alterada com sucesso!')
-        except Exception as e:
-            messages.add_message(request, messages.ERROR, e.args[0])
-        return redirect(reverse('usuarios_perfil', kwargs={'pk': pk}))
-    if request.method == 'GET':
-        return render(request, 'usuarios_perfil.html', context)
+class Motoristas_view(LoginRequiredMixin, HasRoleMixin, ListView):
+    """
+    Exibe a lista de motoristas, com suporte a busca.
+    """
+    model = Usuarios
+    queryset = Usuarios.objects.filter(cargo='M')
+    template_name = 'motoristas_listar.html'
+    login_url = reverse_lazy('login')
+    required_permission = 'Administrador'
+    paginate_by = 10
 
-@login_required(login_url='login')
-@has_role_decorator('Administrador', redirect_url=reverse_lazy('login'))
-def usuariosEditarView(request, pk):
-    if request.method == 'POST':
-        try:
-            usuario = Usuarios.objects.filter(pk=pk)
-            if not usuario.exists():
-                messages.add_message(request, messages.ERROR, 'Usuario não encontrado!')
-                raise usuario.first().DoesNotExist
-            usuario = usuario.first()
-
-            username = username_validator(request.POST.get('username'))
-            try: new_password = password_validator(request.POST.get('new-password'))
-            except: new_password = None
-            try: confirm_password = password_validator(request.POST.get('confirm-password'))
-            except: confirm_password = None
-
-            usuario.username = username
-            if new_password and confirm_password:
-                if new_password != confirm_password:
-                    raise ValidationError('Campos de senha precisam ser iguais!')
-                if not check_password(new_password, usuario.password):
-                    usuario.set_password(new_password)
-            usuario.save()
-        except Exception as e:
-            try:
-                messages.add_message(request, messages.ERROR, e.args[0])
-            except:
-                messages.add_message(request, messages.ERROR, e.args)
-        return redirect(reverse('usuarios_editar', kwargs={'pk': pk}))
-    if request.method == 'GET':
-        context = {
-            'perfil_logado': Usuarios.objects.get(username=request.user),
-            'usuario': Usuarios.objects.get(pk=pk)
-        }
-        return render(request, 'usuarios_editar.html', context)
-
-# @login_required(login_url='login')
-# @has_role_decorator('Administrador', redirect_url=reverse_lazy('login'))
-# def usuariosDeletarView(request, pk):
-#     try:
-#         usuario = Usuarios.objects.get(pk=pk, cargo='M')
-#         usuario.delete()
-#     except Usuarios.DoesNotExist:
-#         messages.add_message(request, messages.ERROR, 'Usuario não encontrado!')
-#     return redirect(reverse('usuarios'))
-
-@login_required(login_url='login')
-@has_role_decorator('Administrador', redirect_url=reverse_lazy('login'))
-def usuariosCadastroView(request):
-    context = {'perfil_logado': Usuarios.objects.get(username=request.user)}
-    if request.method == 'POST':
-        form = UsuariosForm(request.POST)
-        if form.is_valid():
-            try:
-                usuario = Usuarios(
-                    username=form.cleaned_data['username'].strip(),
-                    cargo=form.cleaned_data['cargo']
-                )
-                usuario.set_password(form.cleaned_data['password'])
-                usuario.save()
-                messages.add_message(request, messages.SUCCESS, 'Usuario cadastrado com sucesso!')
-            except Exception as e:
-                messages.add_message(request, messages.ERROR, e)
-        else:
-            messages.add_message(request, messages.ERROR, form.errors)
-        return redirect(reverse('motoristas'))
-    if request.method == 'GET':
-        context['form'] = UsuariosForm()
-        return render(request, 'usuarios_cadastro.html', context)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['perfil_logado'] = get_perfil_logado(self.request)
+        return context
     
+    def get_queryset(self):
+        query = self.request.GET.get('busca-input') if self.request.GET.get('busca-input') else ''
+        queryset = Usuarios.objects.filter(cargo='M', username__icontains=query)
+        return queryset
+
+class Usuario_cadastrar_view(LoginRequiredMixin, HasRoleMixin, CreateView):
+    """
+    View para cadastrar novos usuarios.
+    """
+    model = Usuarios
+    form_class = UsuariosForm
+    template_name = 'base_cadastrar.html'
+    login_url = reverse_lazy('login')
+    required_permission = 'Administrador'
+    success_url = reverse_lazy('motoristas')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['perfil_logado'] = get_perfil_logado(self.request)
+        return context
+    
+    def form_valid(self, form):
+        form.save()
+        messages.success(self.request, 'Usuario adicionado com sucesso!')
+        return super().form_valid(form)
+    
+    def form_invalid(self, form):
+        messages.error(self.request, form.errors)
+        return super().form_invalid(form)
+
+class Usuario_editar_view(LoginRequiredMixin, HasRoleMixin, UpdateView):
+    """
+    Edita as informações de um usuario existente.
+    """
+    model = Usuarios
+    form_class = UsuariosForm
+    template_name = 'base_editar.html'
+    login_url = reverse_lazy('login')
+    required_permission = 'Administrador'
+    success_url = reverse_lazy('motoristas')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['perfil_logado'] = get_perfil_logado(self.request)
+        return context
+    
+    def form_valid(self, form):
+        form.save()
+        messages.success(self.request, 'Usuario atualizado com sucesso!')
+        return super().form_valid(form)
+    
+    def form_invalid(self, form):
+        messages.error(self.request, form.errors)
+        return super().form_invalid(form)
+
+
 @login_required(login_url='login')
 @has_role_decorator('Administrador', redirect_url=reverse_lazy('login'))
-def motoristasView(request):
-    context = {'perfil_logado': Usuarios.objects.get(username=request.user)}
-    if request.method == 'POST':
-        usuarios = Usuarios.objects.filter(username__icontains=request.POST.get('username_busca'), cargo='M')
-
-        context['usuarios'] = usuarios
-        return render(request, 'usuarios.html', context)
-    if request.method == 'GET':
-        context['motoristas'] = Usuarios.objects.filter(cargo='M')
-        return render(request, 'usuarios.html', context)
-
-@login_required(login_url='login')
-@has_role_decorator('Administrador', redirect_url=reverse_lazy('login'))
-def usuariosDesativarView(request, pk):
+def usuarios_desativar_view(request, pk):
+    """
+    Ativa ou desativa um usuario existente.
+    """
     usuario = get_object_or_404(Usuarios, pk=pk)
-    if usuario.ativo:
-        usuario.ativo = False
-    else:
-        usuario.ativo = True
+    usuario.ativo = not usuario.ativo
     usuario.save()
-    messages.add_message(request, messages.SUCCESS, 'Usuario alterado com sucesso!')
-    return redirect(reverse('motoristas'))
+    messages.success(request, 'Status alterado com sucesso!')
+    return redirect('motoristas')
 
-def loginView(request):
-    if request.method == 'POST':
-        try:
-            username = username_validator(request.POST.get('login'))
-            password = username_validator(request.POST.get('senha'))
-            usuario = authenticate(username=username, password=password)
+class Login_view(View):
+    """
+    View que exibe a tela de login e autentica o usuario
+    """
+    template_name = 'login.html'
+    form_class = LoginForm
+
+    def get(self, request):
+        return render(request, self.template_name)
+    
+    def post(self, request):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            usuario = authenticate(username=form.cleaned_data['login'], password=form.cleaned_data['senha'])
             if not usuario:
-                raise ValidationError('Login ou senha inválidos!')
+                messages.error(request, 'Login ou senha incorretos, verifique novamente!')
+                return redirect('login')
             login(request, usuario)
-        except Exception as e:
-            messages.add_message(request, messages.ERROR, e.args[0])
-        else:
-            return redirect(reverse('motoristas'))
-        finally:
-            if Usuarios.objects.get(username=request.user).cargo == 'A':
-                return redirect(reverse('login'))
-            return redirect(reverse('usuarios_perfil', kwargs={'pk':usuario.pk}))
-    if request.method == 'GET':
-        if request.user.is_authenticated:
-            usuario = Usuarios.objects.get(username=request.user)
-            if usuario.cargo == 'A':
-                return redirect(reverse('motoristas'))
-            return redirect(reverse('usuarios_perfil', kwargs={'pk':usuario.pk}))
-        return render(request, 'login.html')
+        return redirect('motoristas')
 
-def logoutView(request):
+def logout_view(request):
+    """
+    Realiza o logout do usuario
+    """
     request.session.flush()
-    return redirect(reverse('login'))
+    return redirect('login')

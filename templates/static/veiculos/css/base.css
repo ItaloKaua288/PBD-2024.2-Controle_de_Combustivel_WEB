@@ -1,0 +1,11 @@
+#id_placa, #id_capacidade_tanque {
+    max-width: 115px;
+}
+
+#id_modelo {
+    max-width: 200px;
+}
+
+#id_quilometragem {
+    max-width: 125px;
+}

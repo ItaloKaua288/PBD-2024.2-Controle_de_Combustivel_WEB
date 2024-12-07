@@ -60,12 +60,12 @@
             <li title="Relatórios" class="dropdown">
               <a class="nav-link link-dark d-flex flex-nowarp">
                 <img src="{% static 'geral/img/relatorios.png' %}" alt="">
-                <span class="option-text invisible">Relatórios</span>
+                <span class="option-text invisible">Financeiro</span>
               </a>
               <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser2" style="left: 55px;">
-                <li><a class="dropdown-item" href="">Relatório geral</a></li>
+                <li><a class="dropdown-item" href="">Relatório mensal</a></li>
+                <li><a class="dropdown-item" href="">Relatório anual</a></li>
                 <li><a class="dropdown-item" href="">Relatório por veiculo</a></li>
-                <li><a class="dropdown-item" href="">Relatório por motorista</a></li>
               </ul>
             </li>
           </ul>
@@ -76,7 +76,6 @@
               <strong class="option-text invisible">Perfil</strong>
             </a>
             <ul class="dropdown-menu text-small shadow position-absolute" aria-labelledby="dropdownUser2" style="left: 55px;">
-              <li><a class="dropdown-item" href="{% url 'usuarios_perfil' perfil_logado.pk %}">Perfil</a></li>
               <li><a class="dropdown-item" href="{% url 'logout' %}">Sair</a></li>
             </ul>
           </div>

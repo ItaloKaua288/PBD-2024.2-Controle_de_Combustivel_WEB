@@ -1,31 +1,39 @@
 from django.db import models
-from django.core.validators import MaxLengthValidator
-from django.utils import timezone
 from .validators import cnpj_validator, preco_validator
 from veiculos.models import TipoCombustivel, Veiculo
 
 class Posto(models.Model):
-    nome = models.CharField(max_length=150, null=False, blank=False, validators=[MaxLengthValidator(limit_value=150)])
+    """
+    Representa um posto de combustíveis.
+    """
+    nome = models.CharField(max_length=150, null=False, blank=False)
     cnpj = models.CharField(max_length=18, unique=True, null=False, blank=False, validators=[cnpj_validator])
-    tipos_combustivel = models.ManyToManyField(TipoCombustivel, related_name='tipos_combustivel')
+    tipos_combustivel = models.ManyToManyField(TipoCombustivel, related_name='postos')
     ativo = models.BooleanField(default=True, null=False, blank=False)
-
-    class Meta:
-        verbose_name = ("Posto")
-        verbose_name_plural = ("Postos")
 
     def __str__(self):
         return self.nome
 
 class Abastecimento(models.Model):
-    posto = models.ForeignKey(Posto, on_delete=models.SET_NULL, null=True)
-    veiculo = models.ForeignKey(Veiculo, on_delete=models.SET_NULL, null=True)
-    tipo_combustivel = models.ForeignKey(TipoCombustivel, on_delete=models.SET_NULL, null=True)
+    """
+    Representa um abastecimento realizado em um posto para um veículo.
+    """
+    posto = models.ForeignKey(Posto, on_delete=models.SET_NULL, null=True, related_name='abastecimentos')
+    veiculo = models.ForeignKey(Veiculo, on_delete=models.SET_NULL, null=True, related_name='abastecimentos')
+    tipo_combustivel = models.ForeignKey(TipoCombustivel, on_delete=models.SET_NULL, null=True, related_name='abastecimentos')
     litros = models.FloatField(default=0, null=False, blank=False)
     valor_litro = models.FloatField(default=0, null=False, blank=False, validators=[preco_validator])
-    valor_total = models.FloatField(default=0, null=False, blank=False, validators=[preco_validator])
-    data_abastecimento = models.DateTimeField(default=timezone.now, null=False, blank=False)
-    data_cadastrado = models.DateTimeField(default=timezone.now, null=False, blank=False)
+    valor_total = models.FloatField(default=0, editable=False)
+    data_abastecimento = models.DateTimeField(auto_now_add=True)
+    quilometragem = models.FloatField(default=0, null=False, blank=False)
+
+    class Meta:
+        ordering = ['-data_abastecimento']
 
     def __str__(self):
-        return f'{self.posto}_{self.veiculo}_{self.data_cadastrado}'
+        return f'{self.posto}_{self.veiculo}_{self.data_abastecimento}'
+    
+    def save(self, *args, **kwargs):
+        self.valor_total = self.litros * self.valor_litro
+        super().save(*args, **kwargs)
+

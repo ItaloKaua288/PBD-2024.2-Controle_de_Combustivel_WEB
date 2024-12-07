@@ -3,17 +3,20 @@
 
 {% block 'title' %}Abastecimentos{% endblock %}
 
+{% block 'head' %}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="{% static 'geral/css/form.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+{% endblock 'head' %}
+
 {% block 'body' %}
     <div class="container p-2">
         <div class="card text-center fw-bold fs-3 mb-2">Abastecimentos</div>
         {% for message in messages %}<div class="alert {{message.tags}}">{{message}}</div>{% endfor %}
         <div class="card flex-row p-2 mb-2 justify-content-between">
-            <form method="post" class="d-flex" style="gap: 5px;">
+            <form method="GET" class="d-flex input-group" style="gap: 5px;">
                 {% csrf_token %}
-                <label for="data-inicio" style="color: black;" class="d-flex align-items-center">Inicio:</label>
-                <input id="data-inicio" type="date" name="data-inicio" class="form-control border-2 border-secondary">
-                <label for="data-fim" style="color: black;" class="d-flex align-items-center">Fim:</label>
-                <input id="data-fim" type="date" name="data-fim" class="form-control border-2 border-secondary">
+                {{ busca_form.as_p }}
                 <input type="submit" value="Buscar" class="btn btn-primary">
             </form>
             <a href="{% url 'abastecimentos_cadastrar' %}" class="btn btn-primary">Cadastrar</a>
@@ -30,13 +33,12 @@
                         <th scope="col">Valor/L R$</th>
                         <th scope="col">Valor tot. R$</th>
                         <th scope="col" style="min-width: 100px;">Data abastecimento</th>
-                        <th scope="col">Data Cadastro</th>
                         <th scope="col">Ações</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% if abastecimentos %}
-                        {% for abastecimento in abastecimentos %}
+                    {% if object_list %}
+                        {% for abastecimento in object_list %}
                             <tr>
                                 <th scope="row">{{abastecimento.id}}</th>
                                 <td>{{abastecimento.posto.nome}}</td>
@@ -46,17 +48,48 @@
                                 <td>{{abastecimento.valor_litro|floatformat:2}}</td>
                                 <td>{{abastecimento.valor_total|floatformat:2}}</td>
                                 <td>{{abastecimento.data_abastecimento}}</td>
-                                <td>{{abastecimento.data_cadastrado}}</td>
                                 <td><div><a class="btn btn-primary me-1 p-1 d-flex" href="{% url 'abastecimentos_editar' abastecimento.pk %}">Editar</a></div></td>
                             </tr>
                         {% endfor %}
                     {% else %}
-                            <td class="text-center" colspan="10">SEM RETORNO!!</td>
+                            <td class="text-center" colspan="9">SEM RETORNO!!</td>
                     {% endif %}
                 </tbody>
             </table>
         </div>
+        <div class="d-flex justify-content-end">
+            {% if page_obj.has_previous %}
+                <a href="?page={{page_obj.previous_page_number}}" class="me-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-arrow-left-short btn btn-secondary p-0" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5"/>
+                    </svg>
+                </a>
+            {% endif %}
+            <span class="text-light fs-5 me-1">página {{page_obj.number}} de {{paginator.num_pages}}</span>
+            {% if page_obj.has_next %}
+                <a href="?page={{page_obj.next_page_number}}" class="me-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-arrow-right-short btn btn-secondary p-0" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8"/>
+                    </svg>
+                </a> 
+            {% endif %}
+        </div>
     </div>
 {% endblock %}
 
-{% block 'script' %}{% endblock %}
+{% block 'script' %}
+    <script>
+        document.querySelector('[name="data_inicio"]').style.width = '113px'
+        document.querySelector('[name="data_fim"]').style.width = '113px'
+        flatpickr('.datepicker', {
+        mode: 'range',
+        onClose: function(selectedDates, dateStr, instance) {
+            if (selectedDates.length === 2) {
+                const [start, end] = selectedDates;                
+                document.querySelector('[name="data_inicio"]').value = instance.formatDate(start, 'd-m-Y');
+                document.querySelector('[name="data_fim"]').value = instance.formatDate(end, 'd-m-Y');
+            }
+        }
+    });
+    </script>
+{% endblock %}

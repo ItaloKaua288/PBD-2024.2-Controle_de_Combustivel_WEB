@@ -1,0 +1,34 @@
+{% extends "base_listar.html" %}
+
+{% block 'title' %}Motoristas{% endblock %}
+
+{% block 'cabecalho' %}Motoristas{% endblock %}
+
+{% block 'busca_input' %}Digite um username{% endblock %}
+
+{% block 'url_cadastrar' %}{% url 'usuarios_cadastrar' %}{% endblock  %}
+
+{% block 'colunas_cabecalho' %}
+    <th scope="col">ID</th>
+    <th scope="col">Username</th>
+    <th scope="col">Senha</th>
+    <th scope="col">Status</th>
+    <th scope="col">Ações</th>
+{% endblock %}
+
+{% block 'colunas_dados' %}
+    <th scope="row">{{obj.id}}</th>
+    <td>{{obj.username}}</td>
+    <td class="overflow-x-scroll" style="max-width: 150px">{{obj.password}}</td>
+    <td>{% if obj.ativo %}Sim{% else %}Não{% endif %}</td>
+    <td style="width: 145px;">
+        <div class="d-flex">
+            <a class="btn btn-primary me-1 p-1" href="{% url 'usuarios_editar' obj.pk %}">Editar</a>
+            {% if obj.ativo %}
+                <a href="{% url 'usuarios_desativar' obj.pk %}" class="btn btn-danger p-1">Desativar</a>
+            {% else %}
+                <a href="{% url 'usuarios_desativar' obj.pk %}" class="btn btn-success p-1">Ativar</a>
+            {% endif %}
+        </div>
+    </td>
+{% endblock %}

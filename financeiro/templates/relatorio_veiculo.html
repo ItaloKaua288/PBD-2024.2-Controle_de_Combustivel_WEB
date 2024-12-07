@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block 'title' %}Relatório Veiculo{% endblock %}
+
+{% block 'head' %}
+    <link rel="stylesheet" href="{% static 'relatorios/css/relatorio_veiculo.css' %}">
+{% endblock %}
+
+{% block 'body' %}
+    <div class="container p-2">
+        <div class="card text-center fw-bold fs-3 mb-2">Relatório Veiculo</div>
+        {% for message in messages %}<div class="alert {{message.tags}}">{{message}}</div>{% endfor %}
+        <form action="" method="post" class="d-flex align-items-center">
+            {% csrf_token %}
+            {{form.as_p}}
+            <div class="d-flex"><input type="submit" value="Confirmar" class="btn btn-primary ms-2"></div>
+        </form>
+        <div class="mt-2">
+            {% if dados %}
+                <div class="input-group">
+                    <span class="input-group-text">Placa:</span>
+                    <span class="form-control">{{dados.veiculo.placa}}</span>
+                    <span class="input-group-text">Modelo:</span>
+                    <span class="form-control">{{dados.veiculo.modelo}}</span>
+                    <span class="input-group-text">Quilometragem:</span>
+                    <span class="form-control">{{dados.veiculo.quilometragem|floatformat:2}} KM</span>
+                </div>
+                {% if dados.cards %}
+                    <section class="d-flex w-100">
+                        <div class="d-flex flex-column mt-2 me-2" style="max-width: 150px;">
+                            <span class="text-center card mb-2 fw-bold">MÊS</span>
+                            {% for key, value in dados.cards.items %}
+                                <div class="card mb-2 text-center">
+                                    <div class="card-header">
+                                        {{key}}
+                                    </div>
+                                    <div class="card-body p-2">
+                                        <h5 class="card-title fs-4">{{value|floatformat:2}}</h5>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div id="graficos-box" class="d-flex mt-2 w-100">
+                            <div class="me-2 w-25 d-flex flex-column align-items-center">
+                                <span class="card text-center fw-bold w-100">Tipos Abastecidos</span>
+                                <canvas id="combustivel-usado" class="w-100"></canvas>
+                            </div>
+                            <div class="w-75">
+                                <span class="card text-center fw-bold">Abastecimentos ao mês</span>
+                                <canvas id="abastecimentos-mes" class="w-100"></canvas>
+                            </div>
+                        </div>
+                    </section>
+                {% else %}
+                    <div class="card text-center mt-2 fw-bold fs-4">Sem Abastecimentos</div>
+                {% endif %}
+                
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block 'script' %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx_combustivel_usado = document.getElementById('combustivel-usado');
+        new Chart(ctx_combustivel_usado, {
+            type: 'doughnut',
+            data: {
+                labels: '{{dados.graficos.combustivel_usado.labels|safe}}'.replace('[','').replace(']','').split(', '),
+                datasets: [{
+                    label: 'Numero de abastecimentos',
+                    data: '{{dados.graficos.combustivel_usado.data|safe}}'.replace('[','').replace(']','').split(', '),
+                    borderWidth: 1
+                }]
+            }
+        });        
+        
+        const ctx_abas_mes = document.getElementById('abastecimentos-mes');
+        new Chart(ctx_abas_mes, {
+            type: 'line',
+            data: {
+                labels: '{{dados.graficos.abastecimentos_mes.labels|safe}}'.replace('[','').replace(']','').split(', '),
+                datasets: [{
+                        label: 'Litros',
+                        data: '{{dados.graficos.abastecimentos_mes.data_litros|safe}}'.replace('[','').replace(']','').split(', '),
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Valor R$',
+                        data: '{{dados.graficos.abastecimentos_mes.data_valor|safe}}'.replace('[','').replace(']','').split(', '),
+                        borderWidth: 1
+                    },
+                ]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+{% endblock %}
