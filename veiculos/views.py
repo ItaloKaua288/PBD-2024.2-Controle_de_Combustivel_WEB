@@ -5,56 +5,38 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, CreateView, UpdateView
 from rolepermissions.decorators import has_role_decorator
-from rolepermissions.mixins import HasRoleMixin
-from rolepermissions.roles import get_user_roles
 from .models import Veiculo
 from .forms import VeiculoForm
-from utils.utils import get_perfil_logado
+from utils.utils import HasRoleMixinCustom, possui_financeiro
 
-class Veiculos_view(LoginRequiredMixin, HasRoleMixin, ListView):
+
+class Veiculos_view(LoginRequiredMixin, HasRoleMixinCustom, ListView):
     """
     Mostra a lista de veiculos cadastrados.
     """
     model = Veiculo
-    queryset = Veiculo.objects.all()
     template_name = 'veiculos.html'
     login_url = reverse_lazy('login')
-    required_permission = 'Administrador'
     paginate_by = 10
+    allowed_roles = ['administrador']
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['perfil_logado'] = get_perfil_logado(self.request)
-        return context
-    
-    def dispatch(self, request, *args, **kwargs):
-        if request.user.is_authenticated:
-            if get_user_roles(request.user)[0].__name__ == 'Administrador':
-                return super().dispatch(request, *args, **kwargs)
-            return redirect('usuarios_perfil', 1)
-        return redirect('login')
-    
     def get_queryset(self):
-        return Veiculo.objects.filter(placa__icontains=self.request.GET.get('busca-input') if self.request.GET.get('busca-input') else '')
+        """
+        Retorna os veículos, filtrando por placa se a busca for fornecida.
+        """
+        return Veiculo.objects.filter(placa__icontains=self.request.GET.get('busca-input', ''))
 
-class Veiculo_cadastrar_view(LoginRequiredMixin, HasRoleMixin, CreateView):
+class Veiculo_cadastrar_view(LoginRequiredMixin, HasRoleMixinCustom, CreateView):
     """
-    Cadastra novos veiculos.
+    Cadastra novos veiculos no sistema.
     """
     model = Veiculo
     form_class = VeiculoForm
     template_name = 'base_cadastrar.html'
     login_url = reverse_lazy('login')
-    required_permission = 'Administrador'
     success_url = reverse_lazy('veiculos')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['perfil_logado'] = get_perfil_logado(self.request)
-        return context
     
     def form_valid(self, form):
-        form.save()
         messages.success(self.request, 'Veiculo adicionado com sucesso!')
         return super().form_valid(form)
     
@@ -63,7 +45,7 @@ class Veiculo_cadastrar_view(LoginRequiredMixin, HasRoleMixin, CreateView):
         return super().form_invalid(form)
 
 
-class Veiculo_editar_view(LoginRequiredMixin, HasRoleMixin, UpdateView):
+class Veiculo_editar_view(LoginRequiredMixin, HasRoleMixinCustom, UpdateView):
     """
     Edita as informações de um posto existente.
     """
@@ -71,16 +53,16 @@ class Veiculo_editar_view(LoginRequiredMixin, HasRoleMixin, UpdateView):
     form_class = VeiculoForm
     template_name = 'base_editar.html'
     login_url = reverse_lazy('login')
-    required_permission = 'Administrador'
     success_url = reverse_lazy('veiculos')
+    allowed_roles = ['administrador']
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['perfil_logado'] = get_perfil_logado(self.request)
-        return context
+    def dispatch(self, request, *args, **kwargs):
+        if possui_financeiro(self.get_object()):
+            messages.error(request, 'Veículo vinculado a financeiro, não pode ser editado.')
+            return redirect('veiculos')
+        return super().dispatch(request, *args, **kwargs)
     
     def form_valid(self, form):
-        form.save()
         messages.success(self.request, 'Veiculo atualizado com sucesso!')
         return super().form_valid(form)
     

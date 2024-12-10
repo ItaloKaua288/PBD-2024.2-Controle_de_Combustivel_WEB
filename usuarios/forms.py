@@ -27,6 +27,7 @@ class UsuariosForm(forms.ModelForm):
             if self._password != self.cleaned_data['password']:
                 self.instance.password = make_password(self.instance.password)
         except AttributeError:
+            print(self.instance.password, 'fafsfas')
             self.instance.password = make_password(self.instance.password)
         return super().save(*args, **kwargs)
 

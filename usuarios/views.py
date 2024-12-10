@@ -1,38 +1,33 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.contrib import messages
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView, CreateView, UpdateView, View
 from rolepermissions.decorators import has_role_decorator
-from rolepermissions.mixins import HasRoleMixin
 from .models import Usuarios
 from .forms import UsuariosForm, LoginForm
-from utils.utils import get_perfil_logado
+from utils.utils import HasRoleMixinCustom
 
-class Motoristas_view(LoginRequiredMixin, HasRoleMixin, ListView):
+class Motoristas_view(LoginRequiredMixin, HasRoleMixinCustom, ListView):
     """
     Exibe a lista de motoristas, com suporte a busca.
     """
     model = Usuarios
-    queryset = Usuarios.objects.filter(cargo='M')
     template_name = 'motoristas_listar.html'
     login_url = reverse_lazy('login')
-    required_permission = 'Administrador'
     paginate_by = 10
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['perfil_logado'] = get_perfil_logado(self.request)
-        return context
+    allowed_roles = ['administrador']
     
     def get_queryset(self):
-        query = self.request.GET.get('busca-input') if self.request.GET.get('busca-input') else ''
-        queryset = Usuarios.objects.filter(cargo='M', username__icontains=query)
+        busca = self.request.GET.get('busca-input', '')
+        queryset = Usuarios.objects.filter(cargo='M')
+        if busca:
+            queryset = queryset.filter(username__icontains=busca)
         return queryset
 
-class Usuario_cadastrar_view(LoginRequiredMixin, HasRoleMixin, CreateView):
+class Usuario_cadastrar_view(LoginRequiredMixin, HasRoleMixinCustom, CreateView):
     """
     View para cadastrar novos usuarios.
     """
@@ -40,16 +35,10 @@ class Usuario_cadastrar_view(LoginRequiredMixin, HasRoleMixin, CreateView):
     form_class = UsuariosForm
     template_name = 'base_cadastrar.html'
     login_url = reverse_lazy('login')
-    required_permission = 'Administrador'
     success_url = reverse_lazy('motoristas')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['perfil_logado'] = get_perfil_logado(self.request)
-        return context
+    allowed_roles = ['administrador']
     
     def form_valid(self, form):
-        form.save()
         messages.success(self.request, 'Usuario adicionado com sucesso!')
         return super().form_valid(form)
     
@@ -57,7 +46,7 @@ class Usuario_cadastrar_view(LoginRequiredMixin, HasRoleMixin, CreateView):
         messages.error(self.request, form.errors)
         return super().form_invalid(form)
 
-class Usuario_editar_view(LoginRequiredMixin, HasRoleMixin, UpdateView):
+class Usuario_editar_view(LoginRequiredMixin, HasRoleMixinCustom, UpdateView):
     """
     Edita as informações de um usuario existente.
     """
@@ -65,23 +54,16 @@ class Usuario_editar_view(LoginRequiredMixin, HasRoleMixin, UpdateView):
     form_class = UsuariosForm
     template_name = 'base_editar.html'
     login_url = reverse_lazy('login')
-    required_permission = 'Administrador'
     success_url = reverse_lazy('motoristas')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['perfil_logado'] = get_perfil_logado(self.request)
-        return context
+    allowed_roles = ['administrador']
     
     def form_valid(self, form):
-        form.save()
         messages.success(self.request, 'Usuario atualizado com sucesso!')
         return super().form_valid(form)
     
     def form_invalid(self, form):
         messages.error(self.request, form.errors)
         return super().form_invalid(form)
-
 
 @login_required(login_url='login')
 @has_role_decorator('Administrador', redirect_url=reverse_lazy('login'))
@@ -103,6 +85,8 @@ class Login_view(View):
     form_class = LoginForm
 
     def get(self, request):
+        if request.user.is_authenticated:
+            return redirect('home')
         return render(request, self.template_name)
     
     def post(self, request):
@@ -111,13 +95,16 @@ class Login_view(View):
             usuario = authenticate(username=form.cleaned_data['login'], password=form.cleaned_data['senha'])
             if not usuario:
                 messages.error(request, 'Login ou senha incorretos, verifique novamente!')
-                return redirect('login')
-            login(request, usuario)
-        return redirect('motoristas')
+            else:
+                login(request, usuario)
+                return redirect('home')
+        return redirect('login')
+
 
 def logout_view(request):
     """
     Realiza o logout do usuario
     """
-    request.session.flush()
+    logout(request)
+    messages.success(request, 'Usuário desconectado com sucesso!')
     return redirect('login')

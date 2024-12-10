@@ -1,29 +1,43 @@
-{% extends "base.html" %}
 {% load static %}
 
-{% block 'body' %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="Width=320,Height=285, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'geral/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'geral/css/base.css' %}">
+    <link rel="shortcut icon" href="{% static 'geral/img/favicon.png' %}" type="image/x-icon">
+</head>
+<body class="bg-dark">
     <div class="container p-2">
-        <div class="card text-center fw-bold fs-3 mb-2">{% block 'cabecalho' %}{% endblock %}</div>
+        <div class="card text-center fw-bold fs-3 mb-2">Cadastrar</div>
         {% for message in messages %}<div class="alert {{message.tags}}">{{message}}</div>{% endfor %}
-        <div class="card flex-row p-2 mb-2 justify-content-between align-items-center">
-            <form method="GET" class="d-flex align-items-center" style="gap: 5px;">
-                {% csrf_token %}
-                {% block 'campo_pesquisa' %}
-                    <input type="text" name="busca-input" placeholder="{% block 'busca_input' %}{% endblock  %}" class="form-control border-2 border-secondary">
-                {% endblock  %}
-                <input type="submit" value="Buscar" class="btn btn-primary">
-            </form>
-            <a href="{% block 'url_cadastrar' %}{% endblock  %}" class="btn btn-primary">Cadastrar</a>
-        </div>
         <div class="overflow-x-auto">
             <table class="table table-dark table-striped">
                 <thead>
-                    <tr>{% block 'colunas_cabecalho' %}{% endblock %}</tr>
+                    <tr>
+                        <th>ID</th>
+                        <th>Data inicial</th>
+                        <th>Data final</th>
+                        <th>Litros</th>
+                        <th>Valor</th>
+                        <th>Ações</th>
+                    </tr>
                 </thead>
                 <tbody>
                     {% if object_list %}
                         {% for obj in object_list %}
-                            <tr>{% block 'colunas_dados' %}{% endblock %}</tr>
+                            <tr>{% block 'colunas_dados' %}{% endblock %}
+                                <td>{{obj.pk}}</td>
+                                <td>{{obj.data_inicial}}</td>
+                                <td>{{obj.data_final}}</td>
+                                <td>{{obj.litros}}</td>
+                                <td>{{obj.totais}}</td>
+                                <td><div class="d-flex">
+                                    <a href="{% url 'financeiro_abast_deletar' obj.pk %}?abast_pk={{abast_pk}}"><span class="btn btn-danger">Cancelar</span></a>
+                                </div></td>
+                            </tr>
                         {% endfor %}
                     {% else %}
                             <td class="text-center" colspan="100%">SEM RETORNO!!</td>
@@ -49,6 +63,5 @@
             {% endif %}
         </div>
     </div>
-{% endblock %}
-
-{% block 'script' %}{% endblock %}
+</body>
+</html>

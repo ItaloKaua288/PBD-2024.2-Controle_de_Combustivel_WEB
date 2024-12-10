@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block 'title' %}Financeiro{% endblock 'title' %}
+
+{% block 'head' %}{% endblock 'head' %}
+
+{% block 'body' %}
+    <div class="container p-2">
+        <div class="card text-center fw-bold fs-3 mb-2">Financeiro vizualizar</div>
+        {% for message in messages %}<div class="alert {{message.tags}}">{{message}}</div>{% endfor %}
+        <div class="d-flex flex-wrap">
+            <p class="input-group w-50">
+                <span class="input-group-text">Data inicial:</span>
+                <span class="form-control">{{object.data_inicial}}</span>
+            </p>
+            <p class="input-group w-50">
+                <span class="input-group-text">Data final:</span>
+                <span class="form-control">{{object.data_final}}</span>
+            </p>
+        </div>
+        <div class="card text-center fw-bold fs-3 mb-2">Relatório</div>
+        <section class='d-flex'>
+            <div class="d-flex flex-column w-25 me-1" style="min-width: 220px;">
+                <div class="card mb-2 text-center">
+                    <div class="card-header">
+                        {{cards.num_abast.label}}
+                    </div>
+                    <div class="card-body p-2">
+                        <h5 class="card-title fs-4">{{cards.num_abast.data}}</h5>
+                    </div>
+                </div>
+                <div class="card mb-2 text-center">
+                    <div class="card-header">
+                        {{cards.litros.label}}
+                    </div>
+                    <div class="card-body p-2">
+                        <h5 class="card-title fs-4">
+                            {% for k, v in cards.litros.data.items %}
+                                <span class="badge text-bg-secondary ms-1">{{k}}: {{v|floatformat:2}}</span>
+                            {% endfor %}
+                        </h5>
+                    </div>
+                </div>
+                <div class="card mb-2 text-center">
+                    <div class="card-header">
+                        {{cards.totais.label}}
+                    </div>
+                    <div class="card-body p-2">
+                        <h5 class="card-title fs-4">
+                            {% for k, v in cards.totais.data.items %}
+                                <span class="badge text-bg-secondary ms-1">{{k}}: {{v|floatformat:2}}</span>
+                            {% endfor %}
+                        </h5>
+                    </div>
+                </div>
+                <canvas id="tipos_combustiveis" class="w-100"></canvas>
+            </div>
+            <div class="d-flex flex-wrap">
+                <div class="card mb-2 text-center w-100" style="height: fit-content;">
+                    <div class="card-header">
+                        {{cards.totais.label}}
+                    </div>
+                    <div class="card-body p-2 overflow-y-auto" style='max-height: 600px;'>
+                        <h5 class="card-title fs-6 d-flex flex-wrap">
+                            {% for k, v in cards.veiculos.data.items %}
+                                <div class="d-flex w-100 border-bottom border-dark flex-wrap pb-1 mt-1">
+                                    <p class="input-group w-50 mb-0" style="min-width: 280px;">
+                                        <span class="input-group-text">Placa:</span>
+                                        <span class="form-control">{{k}}</span>
+                                    </p>
+                                    <p class="input-group w-50 mb-0" style="min-width: 280px;">
+                                        <span class="input-group-text">Litros:</span>
+                                        <span class="form-control">{{v.litros|floatformat:2}}</span>
+                                    </p>
+                                    <p class="input-group w-50 mb-0" style="min-width: 280px;">
+                                        <span class="input-group-text">Gasto R$:</span>
+                                        <span class="form-control">{{v.gasto|floatformat:2}}</span>
+                                    </p>
+                                    <p class="input-group w-50 mb-0" style="min-width: 280px;">
+                                        <span class="input-group-text">Número de vezes:</span>
+                                        <span class="form-control">{{v.num_abast}}</span>
+                                    </p>
+                                </div>
+                            {% endfor %}
+                        </h5>
+                    </div>
+                </div>
+        </section>
+    </div>
+{% endblock 'body' %}
+
+{% block 'script' %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        let aa = `{{graficos.combustiveis.labels|safe}}`
+        const ctx_combustivel_usado = document.getElementById('tipos_combustiveis');
+        new Chart(ctx_combustivel_usado, {
+            type: 'doughnut',
+            data: {
+                labels: "{{graficos.combustiveis.labels|safe}}".replace('[','').replace(']','').split(', '),
+                datasets: [{
+                    label: 'Numero de abastecimentos',
+                    data: "{{graficos.combustiveis.data}}".replace('[','').replace(']','').split(', '),
+                    borderWidth: 1
+                }]
+            }
+        });        
+    </script>
+{% endblock %}

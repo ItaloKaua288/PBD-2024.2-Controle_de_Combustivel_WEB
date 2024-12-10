@@ -27,94 +27,32 @@
     <td>{{obj.capacidade_tanque}}</td>
     <td>{{obj.quilometragem}}</td>
     <td>{% if obj.ativo %}Sim{% else %}Não{% endif %}</td>
-    <td style="width: 140px">
+    <td style='width: 100px;'>
         <div class="d-flex">
-            <a class="btn btn-primary me-1 p-1" href="{% url 'veiculos_editar' obj.pk %}">Editar</a>
+            <a class="btn btn-primary me-1 p-1" href="{% url 'veiculos_editar' obj.pk %}" title='Editar'>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-pencil-fill" viewBox="0 0 16 16">
+                    <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.5.5 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11z"/>
+                </svg>
+            </a>
             {% if obj.ativo %}
-                <a href="{% url 'veiculos_desativar' obj.pk %}" class="btn btn-danger p-1">Desativar</a>
+                <a href="{% url 'veiculos_desativar' obj.pk %}" class="btn btn-danger p-1 me-1" title='Desativar'>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
+                        <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+                    </svg>
+                </a>
             {% else %}
-                <a href="{% url 'veiculos_desativar' obj.pk %}" class="btn btn-success p-1">Ativar</a>
+                <a href="{% url 'veiculos_desativar' obj.pk %}" class="btn btn-success p-1 me-1" title='Ativar'>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-check" viewBox="0 0 16 16">
+                        <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425z"/>
+                    </svg>
+                </a>
             {% endif %}
+            <a href="{% url 'relatorio_veiculo' obj.pk %}" class="btn btn-success p-1" title='Relatório'>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-newspaper" viewBox="0 0 16 16">
+                    <path d="M0 2.5A1.5 1.5 0 0 1 1.5 1h11A1.5 1.5 0 0 1 14 2.5v10.528c0 .3-.05.654-.238.972h.738a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 1 1 0v9a1.5 1.5 0 0 1-1.5 1.5H1.497A1.497 1.497 0 0 1 0 13.5zM12 14c.37 0 .654-.211.853-.441.092-.106.147-.279.147-.531V2.5a.5.5 0 0 0-.5-.5h-11a.5.5 0 0 0-.5.5v11c0 .278.223.5.497.5z"/>
+                    <path d="M2 3h10v2H2zm0 3h4v3H2zm0 4h4v1H2zm0 2h4v1H2zm5-6h2v1H7zm3 0h2v1h-2zM7 8h2v1H7zm3 0h2v1h-2zm-3 2h2v1H7zm3 0h2v1h-2zm-3 2h2v1H7zm3 0h2v1h-2z"/>
+                </svg>
+            </a>
         </div>
     </td>
 {% endblock %}
-
-{% comment %} {% extends "base.html" %}
-{% load static %}
-
-{% block 'title' %}Veiculos{% endblock %}
-
-{% block 'body' %}
-<div class="container p-2">
-    <div class="card text-center fw-bold fs-3 mb-2">Veiculos</div>
-    {% for message in messages %}<div class="alert {{message.tags}}">{{message}}</div>{% endfor %}
-    <div class="card flex-row p-2 mb-2 justify-content-between">
-        <form method="GET" class="d-flex" style="gap: 5px;">
-            {% csrf_token %}
-            <input type="text" name="busca-input" placeholder="Digite uma placa" class="form-control border-2 border-secondary">
-            <input type="submit" value="Buscar" class="btn btn-primary">
-        </form>
-        <a href="{% url 'veiculos_cadastrar' %}" class="btn btn-primary">Cadastrar</a>
-    </div>
-    <div class="overflow-x-auto">
-        <table class="table table-dark table-striped">
-            <thead>
-                <tr>
-                    <th scope="col">Placa</th>
-                    <th scope="col">Modelo</th>
-                    <th scope="col">Marca</th>
-                    <th scope="col">Combustivel</th>
-                    <th scope="col">Tanque/L</th>
-                    <th scope="col">KM atual</th>
-                    <th scope="col">Status</th>
-                    <th scope="col">Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% if object_list %}
-                    {% for veiculo in object_list %}
-                        <tr class="w-100">
-                            <th scope="row" class="text-nowrap">{{veiculo.placa}}</th>
-                            <td class="w-50">{{veiculo.modelo}}</td>
-                            <td>{{veiculo.modelo.marca}}</td>
-                            <td>{% for tipo in veiculo.tipo_combustivel.all %}<span class="badge text-bg-warning ms-1">{{tipo}}</span>{% endfor %}</td>
-                            <td>{{veiculo.capacidade_tanque}}</td>
-                            <td>{{veiculo.quilometragem}}</td>
-                            <td>{% if veiculo.ativo %}Sim{% else %}Não{% endif %}</td>
-                            <td style="width: 140px">
-                                <div class="d-flex">
-                                    <a class="btn btn-primary me-1 p-1" href="{% url 'veiculos_editar' veiculo.pk %}">Editar</a>
-                                    {% if veiculo.ativo %}
-                                        <a href="{% url 'veiculos_desativar' veiculo.pk %}" class="btn btn-danger p-1">Desativar</a>
-                                    {% else %}
-                                        <a href="{% url 'veiculos_desativar' veiculo.pk %}" class="btn btn-success p-1">Ativar</a>
-                                    {% endif %}
-                                </div>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                {% else %}
-                        <td class="text-center" colspan="7">SEM RETORNO!!</td>
-                {% endif %}
-            </tbody>
-        </table>
-    </div>
-    <div class="d-flex justify-content-end">
-        {% if page_obj.has_previous %}
-            <a href="?page={{page_obj.previous_page_number}}" class="me-1">
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-arrow-left-short btn btn-secondary p-0" viewBox="0 0 16 16">
-                    <path fill-rule="evenodd" d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5"/>
-                </svg>
-            </a>
-        {% endif %}
-        <span class="text-light fs-5 me-1">página {{page_obj.number}} de {{paginator.num_pages}}</span>
-        {% if page_obj.has_next %}
-            <a href="?page={{page_obj.next_page_number}}" class="me-1">
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-arrow-right-short btn btn-secondary p-0" viewBox="0 0 16 16">
-                    <path fill-rule="evenodd" d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8"/>
-                </svg>
-            </a> 
-        {% endif %}
-    </div>
-</div>
-{% endblock %} {% endcomment %}

@@ -1,6 +1,7 @@
 from django.db import models
 from .validators import cnpj_validator, preco_validator
 from veiculos.models import TipoCombustivel, Veiculo
+from financeiro.models import Financeiro
 
 class Posto(models.Model):
     """
@@ -26,6 +27,7 @@ class Abastecimento(models.Model):
     valor_total = models.FloatField(default=0, editable=False)
     data_abastecimento = models.DateTimeField(auto_now_add=True)
     quilometragem = models.FloatField(default=0, null=False, blank=False)
+    financeiro = models.ManyToManyField(Financeiro, related_name='abastecimentos')
 
     class Meta:
         ordering = ['-data_abastecimento']

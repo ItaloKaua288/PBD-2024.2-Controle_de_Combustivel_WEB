@@ -21,6 +21,14 @@
           </div>
           <hr>
           <ul class="nav nav-pills flex-column mb-auto">
+            {% comment %} <li title="Home" class="dropdown">
+              <a class="nav-link link-dark d-flex flex-nowarp" href="{% url 'home' %}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-house" viewBox="0 0 16 16">
+                  <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293zM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5z"/>
+                </svg>
+                <span class="option-text invisible">Home</span>
+              </a>
+            </li> {% endcomment %}
             <li title="Motoristas" class="dropdown">
               <a class="nav-link link-dark d-flex flex-nowarp">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-people" viewBox="0 0 16 16">
@@ -42,7 +50,6 @@
               </a>
               <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser2" style="left: 55px;">
                 <li><a class="dropdown-item" href="{% url 'veiculos' %}">Lista de veiculos</a></li>
-                <li><a class="dropdown-item" href=""></a></li>
               </ul>
             </li>
             <li title="Postos" class="dropdown">
@@ -57,15 +64,13 @@
                 <li><a class="dropdown-item" href="{% url 'abastecimentos' %}">Abastecimentos</a></li>
               </ul>
             </li>
-            <li title="Relatórios" class="dropdown">
+            <li title="Financeiro" class="dropdown">
               <a class="nav-link link-dark d-flex flex-nowarp">
                 <img src="{% static 'geral/img/relatorios.png' %}" alt="">
                 <span class="option-text invisible">Financeiro</span>
               </a>
               <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser2" style="left: 55px;">
-                <li><a class="dropdown-item" href="">Relatório mensal</a></li>
-                <li><a class="dropdown-item" href="">Relatório anual</a></li>
-                <li><a class="dropdown-item" href="">Relatório por veiculo</a></li>
+                <li><a class="dropdown-item" href="{% url 'financeiro_abast' %}">Financeiro abastecimentos</a></li>
               </ul>
             </li>
           </ul>

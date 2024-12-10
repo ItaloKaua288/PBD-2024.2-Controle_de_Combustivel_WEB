@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'postos',
     'veiculos',
     'financeiro',
+    'home',
 ]
 
 MIDDLEWARE = [

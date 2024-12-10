@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block 'title' %}Home{% endblock %}
+
+{% block 'head' %}
+{% endblock %}
+
+{% block 'body' %}
+    <div class="container p-2">
+        <div class="card text-center fw-bold fs-3 mb-2">Home</div>
+        {% for message in messages %}<div class="alert {{message.tags}}">{{message}}</div>{% endfor %}
+        <div class="d-flex mb-2 mw-100">
+            <img src="{% static 'home/img/banner.jpg' %}" class="w-25 rounded-4" alt="">
+            <img src="{% static 'home/img/banner2.webp' %}" class="w-25 rounded-4" alt="">
+            <img src="{% static 'home/img/banner3.jpg' %}" class="w-25 rounded-4" alt="">
+            <img src="{% static 'home/img/banner4.jpg' %}" class="w-25 rounded-4" alt="">
+        </div>
+        <section class="w-100 d-flex flex-wrap">
+            <div class="card mb-2 text-center me-2">
+                <div class="card-header">
+                    Quantidade de veículos
+                </div>
+                <div class="card-body p-2">
+                    <h5 class="card-title fs-4">{{cards.num_veiculos}}</h5>
+                </div>
+            </div>
+            <div class="card mb-2 text-center me-2">
+                <div class="card-header">
+                    Gastos no mês R$
+                </div>
+                <div class="card-body p-2 me-2">
+                    <h5 class="card-title fs-4">{{cards.valor_gasto|floatformat:2}}</h5>
+                </div>
+            </div>
+            <div class="card mb-2 text-center">
+                <div class="card-header">
+                    Gastos no mês L
+                </div>
+                <div class="card-body p-2">
+                    <h5 class="card-title fs-4">{{cards.litros|floatformat:2}}</h5>
+                </div>
+            </div>
+        </section>
+    </div>
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block 'title' %}Abastecimento{% endblock %}
+
+{% block 'head' %}
+    <link rel="stylesheet" href="{% static 'geral/css/form.css' %}">
+{% endblock %}
+
+{% block 'body' %}
+    <div class="container p-2">
+        <div class="card text-center fw-bold fs-3 mb-2">Vizualizar</div>
+        {% for message in messages %}<div class="alert {{message.tags}}">{{message}}</div>{% endfor %}
+        <div class="d-flex flex-wrap">
+            <p class="input-group w-50">
+                <span class="input-group-text">Posto:</span>
+                <span class="form-control">{{object.posto}}</span>
+            </p>
+            <p class="input-group w-25">
+                <span class="input-group-text">Veiculo:</span>
+                <span class="form-control">{{object.veiculo}}</span>
+            </p>
+            <p class="input-group w-25">
+                <span class="input-group-text">Tipo combustível:</span>
+                <span class="form-control"><span class="badge text-bg-warning ms-1">{{object.tipo_combustivel}}</span></span>
+            </p>
+            <p class="input-group w-25">
+                <span class="input-group-text">Litros:</span>
+                <span class="form-control">{{object.litros}}</span>
+            </p>
+            <p class="input-group w-25">
+                <span class="input-group-text">Valor litro R$:</span>
+                <span class="form-control">{{object.valor_litro}}</span>
+            </p>
+            <p class="input-group w-25">
+                <span class="input-group-text">Valor total R$:</span>
+                <span class="form-control">{{object.valor_total}}</span>
+            </p>
+            <p class="input-group w-25">
+                <span class="input-group-text">Quilometragem KM:</span>
+                <span class="form-control">{{object.quilometragem}}</span>
+            </p>
+            <p class="input-group w-50">
+                <span class="input-group-text">Data:</span>
+                <span class="form-control">{{object.data_abastecimento}}</span>
+            </p>
+            <p class="input-group w-25">
+                <span class="input-group-text">Financeiro gerado:</span>
+                <span class="form-control d-flex">
+                    {% if object.financeiro.all.exists %}
+                        <span class="badge text-bg-success me-1 p-2 d-flex align-items-center">Sim</span>
+                        <a href="{% url 'financeiro_abast' %}"><span class="btn btn-primary p-1">Ver</span></a>
+                    {% else %}<span class="badge text-bg-danger me-1 p-2 d-flex align-items-center">Não</span>{% endif %}
+                </span>
+            </p>
+        </div>
+    </div>
+{% endblock 'body' %}

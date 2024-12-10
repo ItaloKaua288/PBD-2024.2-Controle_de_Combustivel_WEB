@@ -68,7 +68,7 @@
         new Chart(ctx_combustivel_usado, {
             type: 'doughnut',
             data: {
-                labels: '{{dados.graficos.combustivel_usado.labels|safe}}'.replace('[','').replace(']','').split(', '),
+                labels: "{{dados.graficos.combustivel_usado.labels|safe}}".replace('[','').replace(']','').split(', '),
                 datasets: [{
                     label: 'Numero de abastecimentos',
                     data: '{{dados.graficos.combustivel_usado.data|safe}}'.replace('[','').replace(']','').split(', '),

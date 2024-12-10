@@ -54,3 +54,13 @@ a>svg {
 label, form .errorlist>li {
     color: white;
 }
+
+p:has(>#id_data_inicio), p:has(>#id_data_fim) {
+    display: flex;
+    align-items: center;
+    margin: 0;
+}
+
+p:has(>#id_data_inicio)>label, p:has(>#id_data_fim)>label {
+    color: black;
+}
