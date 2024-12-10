@@ -49,7 +49,7 @@
                 <span class="form-control d-flex">
                     {% if object.financeiro.all.exists %}
                         <span class="badge text-bg-success me-1 p-2 d-flex align-items-center">Sim</span>
-                        <a href="{% url 'financeiro_abast' %}"><span class="btn btn-primary p-1">Ver</span></a>
+                        <span class="btn btn-primary p-1" onclick="open(`{% url 'financeiro_abast_lista' object.pk %}`,'abastecimentos_vizualizar.html','status=no,Width=800,Height=400');">Ver</span>
                     {% else %}<span class="badge text-bg-danger me-1 p-2 d-flex align-items-center">Não</span>{% endif %}
                 </span>
             </p>
