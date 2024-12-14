@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block 'title' %}{{card_titulo}}{% endblock %}
+
+{% block 'head' %}
+    <link rel="stylesheet" href="{% static 'geral/css/form.css' %}">
+{% endblock %}
+
+{% block 'body' %}
+    <div class="container p-2">
+        <div class="card text-center fw-bold fs-3 mb-2 bg-light">{{card_titulo}}</div>
+        {% for message in messages %}<div class="alert {{message.tags}}">{{message}}</div>{% endfor %}
+        <div class="form-group">
+            <form method="post" class="d-flex input-group d-flex">
+                {% csrf_token %}
+                {{form.as_p}}
+                <div class="w-100"><input type="submit" value="Confirmar" class="btn btn-primary me-1"><a href="." class="btn btn-danger">Resetar</a></div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

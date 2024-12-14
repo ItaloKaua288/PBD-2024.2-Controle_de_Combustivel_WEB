@@ -1,11 +1,14 @@
 from django import forms
-from django.contrib.auth.hashers import make_password
+from django.contrib.auth.hashers import make_password, check_password
 from .models import Usuarios
+from django.urls import reverse_lazy
 
 class UsuariosForm(forms.ModelForm):
     """
     Formulário para cadastro e edição de Usuario.
     """
+    url = reverse_lazy('usuarios_cadastrar')
+    _edit = False
     class Meta:
         model = Usuarios
         fields = ['username', 'password', 'cargo']
@@ -14,21 +17,28 @@ class UsuariosForm(forms.ModelForm):
             'password': forms.TextInput(attrs={'class': 'form-control', 'minlength':4, 'maxlength':12}),
             'cargo': forms.Select(attrs={'class': 'form-select form-select-sm h-100'})
         }
-
+    
     def __init__(self, *args, **kwargs):
         """
         Personaliza as escolhas de campos choiceField.
         """
-        if kwargs.get('instance'): self._password = kwargs['instance'].password
+        if kwargs.get('instance'):
+            self._password = kwargs['instance'].password
+            self._edit = True
+            kwargs['instance'].password = None
         super().__init__(*args, **kwargs)
 
+        if self.instance != None:
+            self.fields['password'].required = False
+
     def save(self, *args, **kwargs):
-        try:
-            if self._password != self.cleaned_data['password']:
-                self.instance.password = make_password(self.instance.password)
-        except AttributeError:
-            print(self.instance.password, 'fafsfas')
-            self.instance.password = make_password(self.instance.password)
+        senha_nova = self.cleaned_data['password']
+        if self._edit:
+            senha_antiga = self._password
+            if not check_password(senha_nova, senha_antiga) and senha_nova != '':
+                self.instance.password = make_password(senha_nova)
+            else:
+                self.instance.password = senha_antiga
         return super().save(*args, **kwargs)
 
 

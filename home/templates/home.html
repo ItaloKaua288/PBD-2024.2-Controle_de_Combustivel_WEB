@@ -8,7 +8,7 @@
 
 {% block 'body' %}
     <div class="container p-2">
-        <div class="card text-center fw-bold fs-3 mb-2">Home</div>
+        <div class="card text-center fw-bold fs-3 mb-2 bg-light">Home</div>
         {% for message in messages %}<div class="alert {{message.tags}}">{{message}}</div>{% endfor %}
         <div class="d-flex mb-2 mw-100">
             <img src="{% static 'home/img/banner.jpg' %}" class="w-25 rounded-4" alt="">
@@ -17,28 +17,61 @@
             <img src="{% static 'home/img/banner4.jpg' %}" class="w-25 rounded-4" alt="">
         </div>
         <section class="w-100 d-flex flex-wrap">
-            <div class="card mb-2 text-center me-2">
-                <div class="card-header">
-                    Quantidade de veículos
-                </div>
-                <div class="card-body p-2">
-                    <h5 class="card-title fs-4">{{cards.num_veiculos}}</h5>
+            <div class="col-sm-6 col-md-4" bis_skin_checked="1">
+                <div class="card card-stats card-round" bis_skin_checked="1">
+                    <div class="card-body " bis_skin_checked="1">
+                        <div class="row" bis_skin_checked="1">
+                            <div class="col-5" bis_skin_checked="1">
+                                <div class="icon-big text-center" bis_skin_checked="1">
+                                    <i class="flaticon-delivery-truck text-success"></i>
+                                </div>
+                            </div>
+                            <div class="col-7 col-stats" bis_skin_checked="1">
+                                <div class="numbers" bis_skin_checked="1">
+                                    <p class="card-category">Veículos</p>
+                                    <h4 class="card-title">{{cards.num_veiculos}}</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="card mb-2 text-center me-2">
-                <div class="card-header">
-                    Gastos no mês R$
-                </div>
-                <div class="card-body p-2 me-2">
-                    <h5 class="card-title fs-4">{{cards.valor_gasto|floatformat:2}}</h5>
+            <div class="col-sm-6 col-md-4" bis_skin_checked="1">
+                <div class="card card-stats card-round" bis_skin_checked="1">
+                    <div class="card-body " bis_skin_checked="1">
+                        <div class="row" bis_skin_checked="1">
+                            <div class="col-5" bis_skin_checked="1">
+                                <div class="icon-big text-center" bis_skin_checked="1">
+                                    <i class="flaticon-coins text-success"></i>
+                                </div>
+                            </div>
+                            <div class="col-7 col-stats" bis_skin_checked="1">
+                                <div class="numbers" bis_skin_checked="1">
+                                    <p class="card-category">Gastos no mês</p>
+                                    <h4 class="card-title">R$ {{cards.valor_gasto|floatformat:2}}</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="card mb-2 text-center">
-                <div class="card-header">
-                    Gastos no mês L
-                </div>
-                <div class="card-body p-2">
-                    <h5 class="card-title fs-4">{{cards.litros|floatformat:2}}</h5>
+            <div class="col-sm-6 col-md-4" bis_skin_checked="1">
+                <div class="card card-stats card-round" bis_skin_checked="1">
+                    <div class="card-body " bis_skin_checked="1">
+                        <div class="row" bis_skin_checked="1">
+                            <div class="col-5" bis_skin_checked="1">
+                                <div class="icon-big text-center" bis_skin_checked="1">
+                                    <i class="flaticon-coins text-success"></i>
+                                </div>
+                            </div>
+                            <div class="col-7 col-stats" bis_skin_checked="1">
+                                <div class="numbers" bis_skin_checked="1">
+                                    <p class="card-category">Litros gastos</p>
+                                    <h4 class="card-title">{{cards.litros|floatformat:2}} L</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>

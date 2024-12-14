@@ -1,16 +1,18 @@
 from django import forms
 from .models import TipoCombustivel, Modelo, Veiculo
+from django.urls import reverse_lazy
 
 class VeiculoForm(forms.ModelForm):
     """
     Formulário para cadastro e edição de Veiculo.
     """
+    url = reverse_lazy('veiculos_cadastrar')
     class Meta:
         model = Veiculo
         fields = ['placa', 'modelo', 'capacidade_tanque', 'quilometragem', 'tipo_combustivel']
         widgets = {
             'placa': forms.TextInput(attrs={'class': 'form-control', 'minlength':8, 'placeholder':'XXX-XXXX'}),
-            'modelo': forms.Select(attrs={'class': 'form-select form-select-sm h-100'}),
+            'modelo': forms.Select(attrs={'class': 'form-select form-select-sm p-2'}),
             'capacidade_tanque': forms.NumberInput(attrs={'class': 'form-control', 'min':0}),
             'quilometragem': forms.NumberInput(attrs={'class': 'form-control', 'min':0}),
             'tipo_combustivel': forms.SelectMultiple(attrs={'class': 'form-select form-select-sm'})

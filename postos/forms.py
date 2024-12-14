@@ -2,6 +2,7 @@ from django import forms
 from veiculos.models import TipoCombustivel, Veiculo
 from .validators import cnpj_validator
 from .models import Posto, Abastecimento
+from django.urls import reverse_lazy
 
 def get_list_tipo_combustivel():
     queryset = TipoCombustivel.objects.all()
@@ -11,6 +12,7 @@ class PostoForm(forms.ModelForm):
     """
     Formulário para cadastro e edição de Postos.
     """
+    url = reverse_lazy('postos_cadastrar')
     class Meta:
         model = Posto
         fields = ['nome', 'cnpj', 'tipos_combustivel']
@@ -37,14 +39,15 @@ class AbastecimentoForm(forms.ModelForm):
     """
     Formulário para cadastro e edição de Abastecimentos.
     """
+    url = reverse_lazy('abastecimentos_cadastrar')
     class Meta:
         model = Abastecimento
         fields = ['posto', 'veiculo','tipo_combustivel', 'quilometragem', 'litros', 'valor_litro']
         widgets = {
-            'posto': forms.Select(attrs={'class': 'form-select h-100'}),
-            'veiculo': forms.Select(attrs={'class': 'form-select h-100'}),
+            'posto': forms.Select(attrs={'class': 'form-select p-2'}),
+            'veiculo': forms.Select(attrs={'class': 'form-select p-2'}),
             'quilometragem': forms.NumberInput(attrs={'class': 'form-control', 'min': 0}),
-            'tipo_combustivel': forms.Select(attrs={'class': 'form-select h-100'}),
+            'tipo_combustivel': forms.Select(attrs={'class': 'form-select p-2'}),
             'litros': forms.NumberInput(attrs={'class': 'form-control', 'min': 0}),
             'valor_litro': forms.NumberInput(attrs={'class': 'form-control', 'min': 0}),
         }

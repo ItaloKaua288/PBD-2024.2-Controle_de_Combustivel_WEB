@@ -27,8 +27,8 @@ class Abastecimento(models.Model):
     valor_total = models.FloatField(default=0, editable=False)
     data_abastecimento = models.DateTimeField(auto_now_add=True)
     quilometragem = models.FloatField(default=0, null=False, blank=False)
-    financeiro = models.ManyToManyField(Financeiro, related_name='abastecimentos')
-
+    financeiro = models.ForeignKey(Financeiro, null=True, related_name='abastecimentos', on_delete=models.SET_NULL)
+  
     class Meta:
         ordering = ['-data_abastecimento']
 

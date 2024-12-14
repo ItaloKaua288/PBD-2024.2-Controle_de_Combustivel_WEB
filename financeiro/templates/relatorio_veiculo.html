@@ -5,16 +5,18 @@
 
 {% block 'head' %}
     <link rel="stylesheet" href="{% static 'relatorios/css/relatorio_veiculo.css' %}">
+    <link rel="stylesheet" href="{% static 'geral/css/form.css' %}">
+    <link rel="stylesheet" href="{% static 'financeiro/css/base.css' %}">
 {% endblock %}
 
 {% block 'body' %}
     <div class="container p-2">
-        <div class="card text-center fw-bold fs-3 mb-2">Relatório Veiculo</div>
+        <div class="card text-center fw-bold fs-3 mb-2 bg-light">Relatório Veiculo</div>
         {% for message in messages %}<div class="alert {{message.tags}}">{{message}}</div>{% endfor %}
-        <form action="" method="post" class="d-flex align-items-center">
+        <form action="" method="get" class="d-flex flex-nowrap align-items-center input-group mt-3">
             {% csrf_token %}
             {{form.as_p}}
-            <div class="d-flex"><input type="submit" value="Confirmar" class="btn btn-primary ms-2"></div>
+            <div class="d-flex"><input type="submit" value="Confirmar" class="btn btn-primary ms-2" style="margin-bottom: 1rem;"></div>
         </form>
         <div class="mt-2">
             {% if dados %}
@@ -27,35 +29,34 @@
                     <span class="form-control">{{dados.veiculo.quilometragem|floatformat:2}} KM</span>
                 </div>
                 {% if dados.cards %}
-                    <section class="d-flex w-100">
-                        <div class="d-flex flex-column mt-2 me-2" style="max-width: 150px;">
-                            <span class="text-center card mb-2 fw-bold">MÊS</span>
+                    <section class="d-flex w-100 infos-group">
+                        <div class="d-flex flex-column mt-2 me-2 cards-infos">
+                            <span class="text-center card mb-2 fw-bold text-light p-1">Mês</span>
                             {% for key, value in dados.cards.items %}
-                                <div class="card mb-2 text-center">
-                                    <div class="card-header">
-                                        {{key}}
+                                {% for k, v in value.items %}
+                                    <div class="card mb-2 text-center">
+                                        <div class="card-header text-light">
+                                            {{k}}
+                                        </div>
+                                        <div class="card-body p-2">
+                                            <h5 class="card-title fs-4">{% if key == 'float' %}{{v|floatformat:2}}{% else %}{{v}}{% endif %}</h5>
+                                        </div>
                                     </div>
-                                    <div class="card-body p-2">
-                                        <h5 class="card-title fs-4">{{value|floatformat:2}}</h5>
-                                    </div>
-                                </div>
+                                {% endfor %}
                             {% endfor %}
                         </div>
-                        <div id="graficos-box" class="d-flex mt-2 w-100">
-                            <div class="me-2 w-25 d-flex flex-column align-items-center">
-                                <span class="card text-center fw-bold w-100">Tipos Abastecidos</span>
+                        <div id="graficos-box" class="d-flex flex-column mt-2 w-100 graficos-infos">
+                            <span class="card text-center fw-bold text-light p-1">Abastecimentos ao mês</span>
+                            <canvas id="abastecimentos-mes" class="w-100" style="max-height: 250px;"></canvas>
+                            <div class="me-2 d-flex flex-column align-items-center grafico-tipos">
+                                <span class="card text-center fw-bold w-100 text-light p-1">Tipos Abastecidos</span>
                                 <canvas id="combustivel-usado" class="w-100"></canvas>
-                            </div>
-                            <div class="w-75">
-                                <span class="card text-center fw-bold">Abastecimentos ao mês</span>
-                                <canvas id="abastecimentos-mes" class="w-100"></canvas>
                             </div>
                         </div>
                     </section>
                 {% else %}
-                    <div class="card text-center mt-2 fw-bold fs-4">Sem Abastecimentos</div>
+                    <div class="card text-center mt-2 fw-bold fs-4 text-light">Sem Abastecimentos</div>
                 {% endif %}
-                
             {% endif %}
         </div>
     </div>

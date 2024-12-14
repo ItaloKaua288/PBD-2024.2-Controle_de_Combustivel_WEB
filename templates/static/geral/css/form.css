@@ -1,32 +1,33 @@
 .input-group>p {
+    display: -ms-flexbox;
     display: flex;
-    align-items: center;
-    border-radius: var(--bs-border-radius) !important;
-    overflow: hidden;
-    min-height: 45px;
-    margin-bottom: 5px;
-}
-
-.input-group>p>label, .input-group>p>input {
-    height: 100%;
+    -ms-flex-align: stretch;
+    align-items: stretch;
+    border-radius: .25rem;
 }
 
 .input-group>p>label {
+    font-size: 14px;
+    border-color: #ebedf2 !important;
+    display: -ms-flexbox;
     display: flex;
+    -ms-flex-align: center;
     align-items: center;
     padding: .375rem .75rem;
+    margin-bottom: 0;
     font-size: 1rem;
     font-weight: 400;
     line-height: 1.5;
-    color: var(--bs-body-color);
+    color: #495057;
     text-align: center;
     white-space: nowrap;
-    background-color: var(--bs-tertiary-bg);
-    border: var(--bs-border-width) solid var(--bs-border-color);
+    background-color: #e9ecef;
+    border: 1px solid #ced4da;
+    border-radius: .25rem 0 0 .25rem;
 }
 
-.input-group>p>input, .input-group>p>select {
-    border-radius: 0 !important;
+.input-group>p>input, .input-group>p>select, .input-group>p>.input {
+    border-radius: 0 .25rem .25rem 0 !important;
 }
 
 .input-group>p>select {
@@ -40,4 +41,15 @@
 
 .input-group>.errorlist {
     display:none;
+}
+
+form p, .form-fields p {
+    width: 100%;
+    max-width: calc(100% / 3);
+}
+
+@media screen and (max-width:768px) {
+    form p, .form-fields p {
+        max-width: 100% !important;
+    }
 }

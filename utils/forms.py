@@ -7,7 +7,7 @@ class BuscaForm(forms.Form):
     Formulario de busca por periodo
     """
     data_inicio = forms.DateField(label='Inicio', widget=forms.TextInput(
-        attrs={'class': 'form-control datepicker periodo-datepicker', 'placeholder': 'Data início',}),
+        attrs={'class': 'form-control datepicker periodo-datepicker me-1', 'placeholder': 'Data início',}),
         required=True
     )
     data_fim = forms.DateField(label='Fim', widget=forms.TextInput(

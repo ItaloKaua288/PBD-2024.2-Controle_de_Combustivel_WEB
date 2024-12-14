@@ -20,11 +20,14 @@ class Motoristas_view(LoginRequiredMixin, HasRoleMixinCustom, ListView):
     paginate_by = 10
     allowed_roles = ['administrador']
     
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['cadastro_form'] = UsuariosForm()
+        return context
+
     def get_queryset(self):
-        busca = self.request.GET.get('busca-input', '')
-        queryset = Usuarios.objects.filter(cargo='M')
-        if busca:
-            queryset = queryset.filter(username__icontains=busca)
+        busca = self.request.GET.get('busca', '')
+        queryset = Usuarios.objects.filter(cargo='M', username__icontains=busca)
         return queryset
 
 class Usuario_cadastrar_view(LoginRequiredMixin, HasRoleMixinCustom, CreateView):
@@ -33,10 +36,15 @@ class Usuario_cadastrar_view(LoginRequiredMixin, HasRoleMixinCustom, CreateView)
     """
     model = Usuarios
     form_class = UsuariosForm
-    template_name = 'base_cadastrar.html'
+    template_name = 'base_CRUD.html'
     login_url = reverse_lazy('login')
     success_url = reverse_lazy('motoristas')
     allowed_roles = ['administrador']
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["card_titulo"] = 'Cadastrar'
+        return context
     
     def form_valid(self, form):
         messages.success(self.request, 'Usuario adicionado com sucesso!')
@@ -52,11 +60,16 @@ class Usuario_editar_view(LoginRequiredMixin, HasRoleMixinCustom, UpdateView):
     """
     model = Usuarios
     form_class = UsuariosForm
-    template_name = 'base_editar.html'
+    template_name = 'base_CRUD.html'
     login_url = reverse_lazy('login')
     success_url = reverse_lazy('motoristas')
     allowed_roles = ['administrador']
     
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["card_titulo"] = 'Editar'
+        return context
+
     def form_valid(self, form):
         messages.success(self.request, 'Usuario atualizado com sucesso!')
         return super().form_valid(form)
@@ -95,6 +108,8 @@ class Login_view(View):
             usuario = authenticate(username=form.cleaned_data['login'], password=form.cleaned_data['senha'])
             if not usuario:
                 messages.error(request, 'Login ou senha incorretos, verifique novamente!')
+            elif not usuario.ativo:
+                messages.error(request, 'Usuario desativado, fale com algum administrador!')
             else:
                 login(request, usuario)
                 return redirect('home')

@@ -3,11 +3,12 @@ from django.urls import reverse_lazy
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Q
 from django.views.generic import ListView, CreateView, UpdateView, DetailView
 from rolepermissions.decorators import has_role_decorator
 from .models import Posto, Abastecimento
 from .forms import PostoForm, AbastecimentoForm
-from utils.utils import HasRoleMixinCustom, possui_financeiro, abast_possui_financeiro
+from utils.utils import HasRoleMixinCustom
 from utils.forms import BuscaForm, get_data_form
 
 class Postos_view(LoginRequiredMixin, HasRoleMixinCustom, ListView):
@@ -19,20 +20,31 @@ class Postos_view(LoginRequiredMixin, HasRoleMixinCustom, ListView):
     login_url = reverse_lazy('login')
     paginate_by = 10
     allowed_roles = ['administrador']
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['cadastro_form'] = PostoForm()
+        return context
     
     def get_queryset(self):
-        return Posto.objects.filter(nome__icontains=self.request.GET.get('busca-input', ''))
-
+        busca = self.request.GET.get('busca', '')
+        return Posto.objects.filter(Q(nome__icontains=busca) | Q(cnpj=busca))
+ 
 class Posto_cadastrar_view(LoginRequiredMixin, HasRoleMixinCustom, CreateView):
     """
     View para cadastrar novos postos.
     """
     model = Posto
     form_class = PostoForm
-    template_name = 'base_cadastrar.html'
+    template_name = 'base_CRUD.html'
     login_url = reverse_lazy('login')
     success_url = reverse_lazy('postos')
     allowed_roles = ['administrador']
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["card_titulo"] = 'Cadastrar'
+        return context
     
     def form_valid(self, form):
         messages.success(self.request, 'Posto adicionado com sucesso!')
@@ -48,16 +60,15 @@ class Posto_editar_view(LoginRequiredMixin, HasRoleMixinCustom, UpdateView):
     """
     model = Posto
     form_class = PostoForm
-    template_name = 'base_editar.html'
+    template_name = 'base_CRUD.html'
     login_url = reverse_lazy('login')
     success_url = reverse_lazy('postos')
     allowed_roles = ['administrador']
-
-    def dispatch(self, request, *args, **kwargs):
-        if possui_financeiro(self.get_object()):
-            messages.error(request, 'Posto vínculado a algum financeiro, não é possível editar!')
-            return redirect('postos')
-        return super().dispatch(request, *args, **kwargs)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["card_titulo"] = 'Editar'
+        return context
     
     def form_valid(self, form):
         messages.success(self.request, 'Posto atualizado com sucesso!')
@@ -92,18 +103,18 @@ class Abastecimento_listar_view(LoginRequiredMixin, HasRoleMixinCustom, ListView
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['busca_form'] = BuscaForm()
+        context['cadastro_form'] = AbastecimentoForm()
         return context
 
     def get_queryset(self):
         datas = get_data_form(self.request)
-        queryset = super().get_queryset()
         if None not in datas:
-            return Abastecimento.objects.filter(data_abastecimento__range=[datas[0], datas[1]])
+            return Abastecimento.objects.filter(data_abastecimento__date__range=datas)
         if datas[0]:
-            return Abastecimento.objects.filter(data_abastecimento__gte=datas[0])
+            return Abastecimento.objects.filter(data_abastecimento__date__gte=datas[0])
         if datas[1]:
-            return Abastecimento.objects.filter(data_abastecimento__lte=datas[1])
-        return queryset
+            return Abastecimento.objects.filter(data_abastecimento__date__lte=datas[1])
+        return super().get_queryset()
     
 class Abastecimento_cadastrar_view(LoginRequiredMixin, HasRoleMixinCustom, CreateView):
     """
@@ -111,10 +122,15 @@ class Abastecimento_cadastrar_view(LoginRequiredMixin, HasRoleMixinCustom, Creat
     """
     model = Abastecimento
     form_class = AbastecimentoForm
-    template_name = 'base_cadastrar.html'
+    template_name = 'base_CRUD.html'
     login_url = reverse_lazy('login')
     success_url = reverse_lazy('abastecimentos')
     allowed_roles = ['administrador']
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["card_titulo"] = 'Cadastrar'
+        return context
     
     def form_valid(self, form):
         messages.success(self.request, 'Abastecimento adicionado com sucesso!')
@@ -130,16 +146,21 @@ class Abastecimento_editar_view(LoginRequiredMixin, HasRoleMixinCustom, UpdateVi
     """
     model = Abastecimento
     form_class = AbastecimentoForm
-    template_name = 'base_editar.html'
+    template_name = 'base_CRUD.html'
     login_url = reverse_lazy('login')
     success_url = reverse_lazy('abastecimentos')
     allowed_roles = ['administrador']
-
+    
     def dispatch(self, request, *args, **kwargs):
-        if abast_possui_financeiro(self.get_object()):
-            messages.error(request, 'Abastecimento vinculado a algum financeiro, não é possível editar!')
+        if self.get_object().financeiro:
+            messages.error(request, 'Abastecimento vínculado a um financeiro, não é possivel editar!')
             return redirect('abastecimentos')
         return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["card_titulo"] = 'Editar'
+        return context
     
     def form_valid(self, form):
         messages.success(self.request, 'Abastecimento atualizado com sucesso!')

@@ -4,11 +4,11 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, CreateView, UpdateView
+from django.db.models import Q
 from rolepermissions.decorators import has_role_decorator
 from .models import Veiculo
 from .forms import VeiculoForm
-from utils.utils import HasRoleMixinCustom, possui_financeiro
-
+from utils.utils import HasRoleMixinCustom
 
 class Veiculos_view(LoginRequiredMixin, HasRoleMixinCustom, ListView):
     """
@@ -20,11 +20,17 @@ class Veiculos_view(LoginRequiredMixin, HasRoleMixinCustom, ListView):
     paginate_by = 10
     allowed_roles = ['administrador']
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['cadastro_form'] = VeiculoForm()
+        return context
+
     def get_queryset(self):
         """
         Retorna os veículos, filtrando por placa se a busca for fornecida.
         """
-        return Veiculo.objects.filter(placa__icontains=self.request.GET.get('busca-input', ''))
+        busca = self.request.GET.get('busca', '')
+        return Veiculo.objects.filter(Q(placa__icontains=busca) | Q(modelo__nome__icontains=busca) | Q(modelo__marca__nome__icontains=busca))
 
 class Veiculo_cadastrar_view(LoginRequiredMixin, HasRoleMixinCustom, CreateView):
     """
@@ -32,9 +38,14 @@ class Veiculo_cadastrar_view(LoginRequiredMixin, HasRoleMixinCustom, CreateView)
     """
     model = Veiculo
     form_class = VeiculoForm
-    template_name = 'base_cadastrar.html'
+    template_name = 'base_CRUD.html'
     login_url = reverse_lazy('login')
     success_url = reverse_lazy('veiculos')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["card_titulo"] = 'Cadastrar'
+        return context
     
     def form_valid(self, form):
         messages.success(self.request, 'Veiculo adicionado com sucesso!')
@@ -44,23 +55,21 @@ class Veiculo_cadastrar_view(LoginRequiredMixin, HasRoleMixinCustom, CreateView)
         messages.error(self.request, form.errors)
         return super().form_invalid(form)
 
-
 class Veiculo_editar_view(LoginRequiredMixin, HasRoleMixinCustom, UpdateView):
     """
     Edita as informações de um posto existente.
     """
     model = Veiculo
     form_class = VeiculoForm
-    template_name = 'base_editar.html'
+    template_name = 'base_CRUD.html'
     login_url = reverse_lazy('login')
     success_url = reverse_lazy('veiculos')
     allowed_roles = ['administrador']
-
-    def dispatch(self, request, *args, **kwargs):
-        if possui_financeiro(self.get_object()):
-            messages.error(request, 'Veículo vinculado a financeiro, não pode ser editado.')
-            return redirect('veiculos')
-        return super().dispatch(request, *args, **kwargs)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["card_titulo"] = 'Editar'
+        return context
     
     def form_valid(self, form):
         messages.success(self.request, 'Veiculo atualizado com sucesso!')

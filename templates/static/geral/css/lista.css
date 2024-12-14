@@ -1,0 +1,18 @@
+.modal-body .form-control {
+    background-color: white !important;
+    color: black !important;
+}
+
+.modal-body .form-select {
+    border-color: #2f374b !important;
+}
+
+p:has(>.datepicker){
+    & label {
+        color: white !important;
+    }
+    & input:read-only {
+        color: white !important;
+        background: #1a2035 !important;
+    }
+}

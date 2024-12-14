@@ -1,0 +1,21 @@
+.cards-infos {
+    max-width: 150px;
+}
+
+.grafico-tipos {
+    width: 200.400px;
+}
+
+@media screen and (max-width: 768px) {
+    .infos-group, .infos-group>div {
+        flex-direction: column !important;
+    }
+
+    .cards-infos {
+        max-width: 100%;
+    }
+
+    .grafico-tipos {
+        width: 100%;
+    }
+}

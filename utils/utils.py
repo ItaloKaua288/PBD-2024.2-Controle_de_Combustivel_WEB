@@ -4,15 +4,6 @@ from django.core.exceptions import PermissionDenied
 from django.shortcuts import redirect
 from django.contrib import messages
 
-def abast_possui_financeiro(obj):
-    return obj.financeiro.exists()
-
-def possui_financeiro(obj):
-        """
-        Verifica se o objeto que possui uma lista de armazenamentos possui algum financeiro relacionado.
-        """
-        return obj.abastecimentos.prefetch_related('financeiro').filter(financeiro__isnull=False).exists()
-
 def get_list_placa(queryset):
     lista = [Veiculo.objects.get(pk=x['veiculo']).placa for x in queryset]
     return lista

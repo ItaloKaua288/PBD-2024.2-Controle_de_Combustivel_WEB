@@ -1,3 +1,25 @@
-#id_quilometragem, #id_litros, #id_valor_litro {
-    max-width: 125px;
+/* form p {
+    width: 100%;
+    max-width: calc(100% / 3);
+} */
+
+/* p:has(>#id_nome) {
+    max-width: 500px;
 }
+
+p:has(>#id_cnpj) {
+    max-width: 240px;
+}
+
+p:has(>#id_tipos_combustivel) {
+    max-width: 280px;
+}
+
+p:has(>#id_quilometragem), p:has(>#id_litros), p:has(>#id_valor_litro) {
+    max-width: calc(100% / 3);
+}
+
+p:has(>#id_posto), p:has(>#id_veiculo), p:has(>#id_tipo_combustivel) {
+    max-width: calc(100% / 3);
+} */
+

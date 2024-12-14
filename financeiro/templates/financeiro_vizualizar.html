@@ -7,30 +7,31 @@
 
 {% block 'body' %}
     <div class="container p-2">
-        <div class="card text-center fw-bold fs-3 mb-2">Financeiro vizualizar</div>
+        <div class="card text-center fw-bold fs-3 mb-2 bg-light">Financeiro vizualizar</div>
         {% for message in messages %}<div class="alert {{message.tags}}">{{message}}</div>{% endfor %}
-        <div class="d-flex flex-wrap">
-            <p class="input-group w-50">
+        <div class="d-flex flex-wrap justify-content-end">
+            <p class="input-group w-50 mb-1">
                 <span class="input-group-text">Data inicial:</span>
                 <span class="form-control">{{object.data_inicial}}</span>
             </p>
-            <p class="input-group w-50">
+            <p class="input-group w-50 mb-1">
                 <span class="input-group-text">Data final:</span>
                 <span class="form-control">{{object.data_final}}</span>
             </p>
+            <a class="btn btn-danger mb-1 p-1" href="{% url 'financeiro_abast_deletar' object.pk %}"><i class="bi bi-trash3"></i> Cancelar</a>
         </div>
-        <div class="card text-center fw-bold fs-3 mb-2">Relatório</div>
+        <div class="card text-center fw-bold fs-3 mb-2 bg-light">Relatório</div>
         <section class='d-flex'>
             <div class="d-flex flex-column w-25 me-1" style="min-width: 220px;">
                 <div class="card mb-2 text-center">
-                    <div class="card-header">
+                    <div class="card-header text-light">
                         {{cards.num_abast.label}}
                     </div>
                     <div class="card-body p-2">
                         <h5 class="card-title fs-4">{{cards.num_abast.data}}</h5>
                     </div>
                 </div>
-                <div class="card mb-2 text-center">
+                <div class="card mb-2 text-center text-light">
                     <div class="card-header">
                         {{cards.litros.label}}
                     </div>
@@ -42,7 +43,7 @@
                         </h5>
                     </div>
                 </div>
-                <div class="card mb-2 text-center">
+                <div class="card mb-2 text-center text-light">
                     <div class="card-header">
                         {{cards.totais.label}}
                     </div>
@@ -58,7 +59,7 @@
             </div>
             <div class="d-flex flex-wrap">
                 <div class="card mb-2 text-center w-100" style="height: fit-content;">
-                    <div class="card-header">
+                    <div class="card-header text-light">
                         {{cards.totais.label}}
                     </div>
                     <div class="card-body p-2 overflow-y-auto" style='max-height: 600px;'>
