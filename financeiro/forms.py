@@ -70,11 +70,8 @@ class RelatorioVeiculoForm(forms.Form):
     """
     Formulario do filtro de por mês
     """
-    mes_choices = [
-        (1, 'Janeiro'), (2, 'Fevereiro'), (3, 'Março'), (4, 'Abril'), (5, 'Maio'), (6, 'Junho'), 
-        (7, 'Julho'), (8, 'Agosto'), (9, 'Setembro'), (10, 'Outubro'), (11, 'Novembro'), (12, 'Dezembro')
-    ]
-    mes = forms.ChoiceField(label='Mês', choices=mes_choices, initial=timezone.now().month,
-                             widget=forms.Select(attrs={'class':'form-select'})
-    )
-    
+    data_atual = timezone.now().strftime('%Y-%m')
+    mes = forms.DateField(label='Mês', initial=data_atual, widget=forms.DateInput(
+        attrs={'type': 'month', 'class': 'form-control', 'max': data_atual}
+    ))
+

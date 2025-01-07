@@ -28,10 +28,10 @@
     <td>{{obj.litros}}</td>
     <td>{{obj.totais}}</td>
     <td style='width: 50px;'><div class="d-flex">
-        <a href="{% url 'financeiro_abast_vizualizar' obj.pk %}"><span class="btn btn-primary p-2 me-1" title='Ver'>
+        <a href="{% url 'financeiro_abast_vizualizar' obj.pk %}"><span class="btn btn-primary p-1 me-1" title='Ver'>
             <i class="bi bi-eye"></i>
         </span></a>
-        <button type="button" class="btn btn-danger p-2" data-url='{% url "financeiro_abast_deletar" obj.pk %}' data-bs-toggle="modal" data-bs-target="#modal_confirm" id='cancelarBtn' title='Cancelar'>
+        <button type="button" class="btn btn-danger p-1" data-url='{% url "financeiro_abast_deletar" obj.pk %}' data-bs-toggle="modal" data-bs-target="#modal_confirm" id='cancelarBtn' title='Cancelar'>
             <i class="bi bi-trash3"></i>
         </button>
     </div></td>

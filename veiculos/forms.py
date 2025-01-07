@@ -28,7 +28,6 @@ class VeiculoForm(forms.ModelForm):
         self.fields['tipo_combustivel'].choices = [(queryset.get(tipo=x[0]).pk, x[1]) for x in TipoCombustivel.tipos_choice]
 
     def save(self, *args, **kwargs):
-        print(self.instance.quilometragem)
         return super().save(*args, **kwargs)
 
     def clean_capacidade_tanque(self):
@@ -42,3 +41,10 @@ class VeiculoForm(forms.ModelForm):
         if not isinstance(quilometragem, float) or quilometragem < 0:
             raise forms.ValidationError('A quilometragem deve ser um número positivo!')
         return quilometragem
+
+    def clean_placa(self):
+        placa = self.cleaned_data.get('placa')
+        placa_partes = placa.split('-')
+        if len(placa_partes[0]) != 3 or len(placa_partes[1]) != 4:
+            raise forms.ValidationError('Formato de placa inválida!')
+        return placa

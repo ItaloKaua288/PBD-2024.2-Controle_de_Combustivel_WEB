@@ -8,7 +8,7 @@ class UsuariosForm(forms.ModelForm):
     Formulário para cadastro e edição de Usuario.
     """
     url = reverse_lazy('usuarios_cadastrar')
-    _edit = False
+
     class Meta:
         model = Usuarios
         fields = ['username', 'password', 'cargo']
@@ -24,22 +24,29 @@ class UsuariosForm(forms.ModelForm):
         """
         if kwargs.get('instance'):
             self._password = kwargs['instance'].password
-            self._edit = True
             kwargs['instance'].password = None
         super().__init__(*args, **kwargs)
 
         if self.instance != None:
             self.fields['password'].required = False
 
+    def clean_password(self):
+        """
+        Verifica e processa o campo password durante a validação.
+        """
+        password = self.cleaned_data.get('password')
+        if self.instance.pk:
+            if password and not check_password(password, self._password):
+                return make_password(password)
+            return self._password
+        elif password:
+            return make_password(password)
+        raise forms.ValidationError("A senha é obrigatória para novos usuários.")
+    
     def save(self, *args, **kwargs):
-        senha_nova = self.cleaned_data['password']
-        if self._edit:
-            senha_antiga = self._password
-            if not check_password(senha_nova, senha_antiga) and senha_nova != '':
-                self.instance.password = make_password(senha_nova)
-            else:
-                self.instance.password = senha_antiga
-        return super().save(*args, **kwargs)
+            self.instance.password = self.cleaned_data['password']
+            return super().save(*args, **kwargs)
+    
 
 
 class LoginForm(forms.Form):

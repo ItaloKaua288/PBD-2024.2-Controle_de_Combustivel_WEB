@@ -16,6 +16,14 @@ class BuscaForm(forms.Form):
         required=True
     )
 
+class MesSelector(forms.Form):
+    """
+    Formulario de busca por mês
+    """
+    mes = forms.DateField(label='Mês', widget=forms.DateInput(
+        attrs={'type': 'month', 'class': 'form-control', 'max': ''}
+    ))
+
 def get_data_form(request):
     try: data_inicio = datetime.strptime(request.GET.get('data_inicio'), "%d-%m-%Y")
     except: data_inicio = None

@@ -7,9 +7,10 @@ from django.contrib import messages
 from django.utils import timezone
 from .models import Financeiro
 from .forms import FinanceiroAbastForm, RelatorioVeiculoForm
-from utils.forms import BuscaForm, get_data_form
+from utils.forms import BuscaForm, get_data_form, MesSelector
 from utils.utils import get_list_placa, get_list_combustivel, get_combustivel_tipo, HasRoleMixinCustom
 from veiculos.models import Veiculo, TipoCombustivel
+from datetime import datetime
 
 class Financeiro_abast_listar_view(LoginRequiredMixin, HasRoleMixinCustom, ListView):
     """
@@ -140,15 +141,11 @@ class Relatorio_veiculo_view(LoginRequiredMixin, HasRoleMixinCustom, View):
         return dias, gastos, litros
 
     def get(self, request, *args, **kwargs):
-        form_mes = RelatorioVeiculoForm(data=request.GET)
-        mes = timezone.now().month
+        data = datetime.strptime(request.GET.get('mes', timezone.now().strftime('%Y-%m')), '%Y-%m')
 
-        if form_mes.is_valid():
-            mes = form_mes.cleaned_data['mes']
-        
         object = get_object_or_404(Veiculo, pk=kwargs.get('pk'))
         context = {'form': RelatorioVeiculoForm(), 'dados': {'veiculo': object}}
-        abastecimentos = object.abastecimentos.filter(data_abastecimento__month=mes)
+        abastecimentos = object.abastecimentos.filter(data_abastecimento__month=data.month, data_abastecimento__year=data.year)
         
         if abastecimentos.exists():
             valor_gasto = abastecimentos.aggregate(Sum('valor_total'))['valor_total__sum']

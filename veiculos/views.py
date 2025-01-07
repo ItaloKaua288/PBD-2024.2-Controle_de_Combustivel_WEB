@@ -30,7 +30,7 @@ class Veiculos_view(LoginRequiredMixin, HasRoleMixinCustom, ListView):
         Retorna os veículos, filtrando por placa se a busca for fornecida.
         """
         busca = self.request.GET.get('busca', '')
-        return Veiculo.objects.filter(Q(placa__icontains=busca) | Q(modelo__nome__icontains=busca) | Q(modelo__marca__nome__icontains=busca))
+        return Veiculo.objects.filter(Q(placa__icontains=busca) | Q(modelo__nome__icontains=busca) | Q(modelo__marca__nome__icontains=busca)).order_by('-id')
 
 class Veiculo_cadastrar_view(LoginRequiredMixin, HasRoleMixinCustom, CreateView):
     """
